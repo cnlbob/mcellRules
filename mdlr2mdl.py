@@ -58,16 +58,16 @@ class MDLR2MDL(object):
 
         # append extended bng-xml to the bng-xml definition (the one that
         # doesn't include seed information)
-        bngxmlestr = writeBXe.mergeBXBXe(
+        bngxmlestr = writeBXe.merge_bxbxe(
             namespace.input + '_total.xml', namespace.input + '_extended.xml')
         with open(mdlrPath + '_total.xml', 'w') as f:
             f.write(bngxmlestr)
 
         xmlspec = read_bngxml.parseFullXML(namespace.input + '.xml')
         # write out the equivalent plain mdl stuffs
-        mdlDict = write_mdl.construct_mcell(
+        mdl_dict = write_mdl.construct_mcell(
             xmlspec, namespace.input, finalName.split(os.sep)[-1], nauty_dict)
-        write_mdl.write_mdl(mdlDict, finalName)
+        write_mdl.write_mdl(mdl_dict, finalName)
 
     def tokenize_seed_elements(self, seed):
         # extract species names
@@ -83,10 +83,10 @@ class MDLR2MDL(object):
 
         seedList = ['<Model><ListOfSpecies>{0}</ListOfSpecies></Model>'.format(x) for x in seedList]
 
-        # seedDict = {x:y for x, y in zip(seedKeys, seedList)}
-        seedDict = {x.split(';')[0]: y for x, y in zip(seedKeys, seedList) if x.split(';')[1] != '0'}
-        # print '---', seedDict.keys()
-        return seedDict
+        # seed_dict = {x:y for x, y in zip(seedKeys, seedList)}
+        seed_dict = {x.split(';')[0]: y for x, y in zip(seedKeys, seedList) if x.split(';')[1] != '0'}
+        # print '---', seed_dict.keys()
+        return seed_dict
 
     def get_names_from_definition_string(self, defStr):
         speciesNames = re.findall('[0-9a-zA-Z_]+\(', defStr)
@@ -122,15 +122,15 @@ class MDLR2MDL(object):
         # remove encapsulating tags
         seed = seed[30:-30]
         # get the seed species definitions as a list
-        seedDict = self.tokenize_seed_elements(seed)
+        seed_dict = self.tokenize_seed_elements(seed)
 
         nauty_dict = {}
-        for seed in seedDict:
+        for seed in seed_dict:
             # initialize nfsim with each species definition and get back a
             # dirty list where one of the entries is the one we want 
             #
             # XXX: i think i've solved it on the nfsim side, double check
-            tmpList = self.get_nauty_string(seedDict[seed])
+            tmpList = self.get_nauty_string(seed_dict[seed])
             # and now filter it out...
             # get species names from species definition string
             speciesNames = self.get_names_from_definition_string(seed)
@@ -152,10 +152,10 @@ if __name__ == "__main__":
     finalName = namespace.output if namespace.output else namespace.input
 
     # mdl to bngl
-    resultDict = read_mdl.constructBNGFromMDLR(namespace.input, namespace.nfsim)
+    resultDict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
     outputDir = os.sep.join(namespace.output.split(os.sep)[:-1])
     # create bngl file
-    read_mdl.outputBNGL(resultDict['bnglstr'], bnglPath)
+    read_mdl.output_bngl(resultDict['bnglstr'], bnglPath)
 
     # temporaryly store bng-xml information in a separate file for display
     # purposes
@@ -169,10 +169,10 @@ if __name__ == "__main__":
 
         read_mdl.bngl2json(namespace.input + '.bngl')
         # json 2 plain mdl
-        mdlDict = write_mdl.constructMDL(
+        mdl_dict = write_mdl.constructMDL(
             namespace.input + '_sbml.xml.json', namespace.input, finalName)
         # create an mdl with nfsim-species and nfsim-reactions
-        write_mdl.write_mdl(mdlDict, finalName)
+        write_mdl.write_mdl(mdl_dict, finalName)
     else:
         try:
             mdlr2mdl = MDLR2MDL(os.path.join(get_script_path(), 'mcellr.yaml'))

@@ -20,61 +20,62 @@ def eprint(*args, **kwargs):
     '''
     print(*args, file=sys.stderr, **kwargs)
 
-def processParameters(statements):
+
+def process_parameters(statements):
     pstr = StringIO()
     pstr.write('begin parameters\n')
     for parameter in statements:
         if parameter[1][0] != '"':
-            tempStr = '\t{0} {1}\n'.format(parameter[0],parameter[1]).replace('/*', '#')
-            tempStr.replace('//', '#')
+            temp_str = '\t{0} {1}\n'.format(parameter[0],parameter[1]).replace('/*', '#')
+            temp_str.replace('//', '#')
         else:
             continue
-        pstr.write(tempStr)
+        pstr.write(temp_str)
     pstr.write('end parameters\n')
 
     return pstr.getvalue()
 
 
-def createMoleculeFromPattern(moleculePattern, idx):
-    tmpMolecule = st.Molecule(moleculePattern['moleculeName'], idx)
-    if 'moleculeCompartment' in moleculePattern:
-        tmpMolecule.compartment = moleculePattern['moleculeCompartment'][1]
-    if 'components' in moleculePattern.keys():
-        for idx2, component in enumerate(moleculePattern['components']):
-            tmpComponent = st.Component(component['componentName'],'{0}_{1}'.format(idx,idx2))
+def create_molecule_from_pattern(molecule_pattern, idx):
+    tmp_molecule = st.Molecule(molecule_pattern['moleculeName'], idx)
+    if 'moleculeCompartment' in molecule_pattern:
+        tmp_molecule.compartment = molecule_pattern['moleculeCompartment'][1]
+    if 'components' in molecule_pattern.keys():
+        for idx2, component in enumerate(molecule_pattern['components']):
+            tmp_component = st.Component(component['componentName'],'{0}_{1}'.format(idx,idx2))
             if 'state' in component:
                 for state in component['state']:
                     if state != '':
-                        tmpComponent.addState(state)
+                        tmp_component.addState(state)
             if 'bond' in component.keys():
                 for bond in component['bond']:
-                    tmpComponent.addBond(bond)
-            tmpMolecule.addComponent(tmpComponent)
-    return tmpMolecule
+                    tmp_component.addBond(bond)
+            tmp_molecule.addComponent(tmp_component)
+    return tmp_molecule
 
 
-def createSpeciesFromPattern(speciesPattern):
-    tmpSpecies = st.Species()
+def create_species_from_pattern(speciesPattern):
+    tmp_species = st.Species()
     if 'speciesCompartment' in speciesPattern.keys():
-        tmpSpecies.compartment = speciesPattern['speciesCompartment'][1]
+        tmp_species.compartment = speciesPattern['speciesCompartment'][1]
     for idx, element in enumerate(speciesPattern['speciesPattern']):
-        tmpSpecies.addMolecule(createMoleculeFromPattern(element, idx))
-    return tmpSpecies
+        tmp_species.addMolecule(create_molecule_from_pattern(element, idx))
+    return tmp_species
 
 
-def processMolecules(molecules):
+def process_molecules(molecules):
     mstr = StringIO()
-    moleculeList = []
+    molecule_list = []
     mstr.write('begin molecule types\n')
     for idx, molecule in enumerate(molecules):
-        tmpMolecule = createMoleculeFromPattern(molecule[0], idx)
-        moleculeList.append((tmpMolecule.name,str(tmpMolecule)))
-        mstr.write('\t{0}\n'.format(tmpMolecule.str2()))
+        tmp_molecule = create_molecule_from_pattern(molecule[0], idx)
+        molecule_list.append((tmp_molecule.name,str(tmp_molecule)))
+        mstr.write('\t{0}\n'.format(tmp_molecule.str2()))
     mstr.write('end molecule types\n')
-    return mstr.getvalue(), moleculeList
+    return mstr.getvalue(), molecule_list
 
 
-def processInitCompartments(initializations):
+def process_init_compartments(initializations):
     sstr = StringIO()
     cstr = StringIO()
     sstr.write('begin seed species\n')
@@ -83,15 +84,15 @@ def processInitCompartments(initializations):
     for initialization in initializations:
         #print initialization.keys()
         if 'name' in initialization.keys():
-            tmpSpecies = None
+            tmp_species = None
             initialConditions = 0
             for entry in initialization['entries']:
                 if entry[0] == 'MOLECULE':
                     pattern = species_definition.parseString(entry[1])
-                    tmpSpecies = createSpeciesFromPattern(pattern[0])
+                    tmp_species = create_species_from_pattern(pattern[0])
                 elif entry[0] in ['NUMBER_TO_RELEASE', 'CONCENTRATION']:
                     initialConditions = entry[1]
-            sstr.write('\t {0} {1}\n'.format(str(tmpSpecies),initialConditions))
+            sstr.write('\t {0} {1}\n'.format(str(tmp_species),initialConditions))
         else:
             optionDict = {'parent': '', 'name': initialization['compartmentName']}
             for option in initialization['compartmentOptions'][0]:
@@ -116,7 +117,7 @@ def processInitCompartments(initializations):
     return sstr.getvalue(), cstr.getvalue()
 
 
-def processObservables(observables):
+def process_observables(observables):
     ostr = StringIO()
     ostr.write('begin observables\n')
     for observable in observables:
@@ -125,7 +126,7 @@ def processObservables(observables):
             tmpObservable += '{0} '.format(observable['outputfile'].split('/')[-1].split('.')[0])
             patternList = []
             for pattern in observable['patterns']:
-                patternList.append(str(createSpeciesFromPattern(pattern['speciesPattern'])))
+                patternList.append(str(create_species_from_pattern(pattern['speciesPattern'])))
             tmpObservable +=  ', '.join(patternList)
             ostr.write(tmpObservable + '\n')
         elif 'obskey' in observable.keys():
@@ -133,14 +134,15 @@ def processObservables(observables):
             tmpObservable += '{0} '.format(observable['obsname'])
             patternList = []
             for pattern in observable['obspatterns']:
-                patternList.append(str(createSpeciesFromPattern(pattern)))
+                patternList.append(str(create_species_from_pattern(pattern)))
             tmpObservable +=  ', '.join(patternList)
             ostr.write(tmpObservable + '\n')
 
     ostr.write('end observables\n')
     return ostr.getvalue()
 
-def processMTObservables(moleculeTypes):
+
+def process_mtobservables(moleculeTypes):
     '''
     creates a list of observables from just molecule types
     '''
@@ -156,27 +158,28 @@ def processMTObservables(moleculeTypes):
     return ostr.getvalue()
 
 
-def processReactionRules(rules):
+def process_reaction_rules(rules):
     rStr = StringIO()
     rStr.write('begin reaction rules\n')
     for rule in rules:
-        tmpRule = st.Rule()
+        tmp_rule = st.Rule()
         for pattern in rule['reactants']:
-            tmpRule.addReactant(createSpeciesFromPattern(pattern))
+            tmp_rule.addReactant(create_species_from_pattern(pattern))
         for pattern in rule['products']:
-            tmpRule.addProduct(createSpeciesFromPattern(pattern))
+            tmp_rule.addProduct(create_species_from_pattern(pattern))
         for rate in rule['rate']:
-            tmpRule.addRate(rate)
-        rStr.write('\t{0}\n'.format(str(tmpRule)))
+            tmp_rule.addRate(rate)
+        rStr.write('\t{0}\n'.format(str(tmp_rule)))
 
     rStr.write('end reaction rules\n')
     return rStr.getvalue()
 
 
-def processDiffussionElements(parameters, extendedData):
+def process_diffussion_elements(parameters, extendedData):
     '''
-    extract the list of properties associated to molecule types and compartment objects. right now this information
-    will be encoded into the bng-exml spec. It also extracts some predetermined model properties. 
+    extract the list of properties associated to molecule types and compartment
+    objects. right now this information will be encoded into the bng-exml spec.
+    It also extracts some predetermined model properties. 
     '''
     modelProperties = {}
     moleculeProperties = defaultdict(list)
@@ -188,9 +191,6 @@ def processDiffussionElements(parameters, extendedData):
 
     for parameter in extendedData['system']:
         modelProperties[parameter[0].strip()] = parameter[1].strip()
-
-
-
     
     for molecule in extendedData['molecules']:
         if 'moleculeParameters' in molecule[1]:
@@ -230,11 +230,12 @@ def processDiffussionElements(parameters, extendedData):
                     compartmentProperties[seed['compartmentName']].append((element[0], element[1]))
             if membrane != '' and len(membrane_properties) > 0:
                 compartmentProperties[membrane] = membrane_properties
-        #if seed[1] not in ['RELEASE_SITE']:
 
     return {'modelProperties':modelProperties, 'moleculeProperties': moleculeProperties, 
             'compartmentProperties': compartmentProperties}
-def processFunctions(rawFunctions):
+
+
+def process_functions(rawFunctions):
     ofun = StringIO()
     ofun.write('begin functions\n')
     for function in rawFunctions:
@@ -244,7 +245,8 @@ def processFunctions(rawFunctions):
 
     return ofun.getvalue()
 
-def writeDefaultFunctions():
+
+def write_default_functions():
     defaultFunctions = StringIO()
 
     defaultFunctions.write('begin functions\n')
@@ -254,7 +256,8 @@ def writeDefaultFunctions():
 
     return defaultFunctions.getvalue()
 
-def constructBNGFromMDLR(mdlrPath,nfsimFlag=False, separateSpatial=True):
+
+def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
     '''
     initializes a bngl file and an extended-bng-xml file with a MDLr file description
     '''
@@ -264,65 +267,65 @@ def constructBNGFromMDLR(mdlrPath,nfsimFlag=False, separateSpatial=True):
     statements = statementGrammar.parseString(mdlr)
 
     sections = grammar.parseString(mdlr)
-    finalBNGLStr = StringIO()
-    finalBNGLStr.write('begin model\n')
-    parameterStr = processParameters(statements)
+    final_bngl_str = StringIO()
+    final_bngl_str.write('begin model\n')
+    parameterStr = process_parameters(statements)
     try:
-        moleculeStr,moleculeList = processMolecules(sections['molecules'])
+        moleculeStr, molecule_list = process_molecules(sections['molecules'])
     except 'KeyError':
         eprint('There is an issue with the molecules section in the mdlr file')
     try:
-        seedspecies, compartments = processInitCompartments(sections['initialization']['entries'])
+        seedspecies, compartments = process_init_compartments(sections['initialization']['entries'])
     except KeyError:
         eprint('There is an issue with the initialization section in the mdlr file')
     if 'math_functions' in sections:
-        functions = processFunctions(sections['math_functions'])
+        functions = process_functions(sections['math_functions'])
     else:
         functions = ''
     
     if not nfsimFlag:
-        observables = processObservables(sections['observables'])
+        observables = process_observables(sections['observables'])
     else:
         try:
-            observables = processObservables(sections['observables'])
+            observables = process_observables(sections['observables'])
         except KeyError:
             eprint('There is an issue with the observables section in the mdlr file')
-        #observables = processMTObservables(moleculeList)
-    reactions = processReactionRules(sections['reactions'])
+        #observables = process_mtobservables(molecule_list)
+    reactions = process_reaction_rules(sections['reactions'])
 
-    #functions = writeDefaultFunctions()
+    #functions = write_default_functions()
 
-    finalBNGLStr.write(parameterStr)
-    finalBNGLStr.write(moleculeStr)
-    finalBNGLStr.write(compartments)
-    finalBNGLStr.write(seedspecies)
-    finalBNGLStr.write(observables)
-    finalBNGLStr.write(functions)
-    #finalBNGLStr.write('begin observables\nend observables\n')
-    finalBNGLStr.write(reactions)
-    finalBNGLStr.write('end model\n')
+    final_bngl_str.write(parameterStr)
+    final_bngl_str.write(moleculeStr)
+    final_bngl_str.write(compartments)
+    final_bngl_str.write(seedspecies)
+    final_bngl_str.write(observables)
+    final_bngl_str.write(functions)
+    #final_bngl_str.write('begin observables\nend observables\n')
+    final_bngl_str.write(reactions)
+    final_bngl_str.write('end model\n')
 
     #add processing actions
     if not nfsimFlag:
-        finalBNGLStr.write('generate_network({overwrite=>1})\n')
-        finalBNGLStr.write('writeSBML()\n')
+        final_bngl_str.write('generate_network({overwrite=>1})\n')
+        final_bngl_str.write('writeSBML()\n')
 
     '''
     eventually this stuff should be integrated into bionetgen proper
     '''
-    if separateSpatial:
+    if separate_spatial:
 
-        extendedData = {}
+        extended_data = {}
         if 'systemConstants' in sections.keys():
-            extendedData['system'] = sections['systemConstants']
+            extended_data['system'] = sections['systemConstants']
         else:
-            extendedData['system'] = []
-        extendedData['molecules'] = sections['molecules']
-        extendedData['initialization'] = sections['initialization']['entries']
-        propertiesDict = processDiffussionElements(statements, extendedData)
-        bngxmle = write_bngxmle.write2BNGXMLe(propertiesDict, mdlrPath.split(os.sep)[-1])
+            extended_data['system'] = []
+        extended_data['molecules'] = sections['molecules']
+        extended_data['initialization'] = sections['initialization']['entries']
+        propertiesDict = process_diffussion_elements(statements, extended_data)
+        bngxmle = write_bngxmle.write2bngxmle(propertiesDict, mdlrPath.split(os.sep)[-1])
 
-    return {'bnglstr':finalBNGLStr.getvalue(), 'bngxmlestr':bngxmle}
+    return {'bnglstr':final_bngl_str.getvalue(), 'bngxmlestr':bngxmle}
 
 
 def bngl2json(bnglFile):
@@ -332,24 +335,16 @@ def bngl2json(bnglFile):
     call(['./sbml2json','-i', sbmlName])
 
 
-def outputBNGL(bnglStr, bnglPath):
+def output_bngl(bngl_str, bnglPath):
     with open(bnglPath, 'w') as f:
-        f.write(bnglStr)
+        f.write(bngl_str)
 
 
 if __name__ == "__main__":
     
-    #with open('example.mdlr', 'r') as f:
-    #    mldr = f.read()
-    #statements = statementGrammar.parseString(mldr)
-    #sections = grammar.parseString(mldr)
-    #bnglStr = constructBNGFromMDLR(statements, sections)
-    
-    bnglStr = constructBNGFromMDLR('example.mdlr')
+    bngl_str = construct_bng_from_mdlr('example.mdlr')
     bnglPath = 'output.bngl'
-    #with open(bnglFile,'w') as f:
-    #    f.write(bnglStr)
-    outputBNGL(bnglStr, bnglPath)
+    output_bngl(bngl_str, bnglPath)
 
     bngl2json(bnglFile)
 
