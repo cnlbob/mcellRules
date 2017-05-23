@@ -12,7 +12,7 @@ import yaml
 import sys
 
 
-def defineConsole():
+def define_console():
     parser = argparse.ArgumentParser(description='SBML to BNGL translator')
     parser.add_argument(
         '-i', '--input', type=str, help='input MDLr file', required=True)
@@ -25,7 +25,7 @@ def defineConsole():
     return parser
 
 
-def getScriptPath():
+def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 
@@ -45,13 +45,13 @@ class MDLR2MDL(object):
                   "mcellr.yaml")
             sys.exit(0)
 
-    def processMDLR(self, mdlrPath):
+    def process_mdlr(self, mdlrPath):
         '''
         main method. extracts species definition, creates bng-xml, creates mdl
         definitions
         '''
         try:
-            nautyDict = self.xml2HNautySpeciesDefinitions(mdlrPath)
+            nauty_dict = self.xml2hnauty_species_definitions(mdlrPath)
         except OSError:
             print("Cannot open BNG2.pl. Please check bionetgen in mcellr.yaml")
             sys.exit(0)
@@ -65,11 +65,11 @@ class MDLR2MDL(object):
 
         xmlspec = read_bngxml.parseFullXML(namespace.input + '.xml')
         # write out the equivalent plain mdl stuffs
-        mdlDict = write_mdl.constructMCell(
-            xmlspec, namespace.input, finalName.split(os.sep)[-1], nautyDict)
-        write_mdl.writeMDL(mdlDict, finalName)
+        mdlDict = write_mdl.construct_mcell(
+            xmlspec, namespace.input, finalName.split(os.sep)[-1], nauty_dict)
+        write_mdl.write_mdl(mdlDict, finalName)
 
-    def tokenizeSeedElements(self, seed):
+    def tokenize_seed_elements(self, seed):
         # extract species names
         seedKeys = re.findall(
             'concentration="[0-9a-zA-Z_]+" name="[_0-9a-zA-Z@:(~!),.]+"', seed)
@@ -88,11 +88,11 @@ class MDLR2MDL(object):
         # print '---', seedDict.keys()
         return seedDict
 
-    def getNamesFromDefinitionString(self, defStr):
+    def get_names_from_definition_string(self, defStr):
         speciesNames = re.findall('[0-9a-zA-Z_]+\(', defStr)
         return [x[:-1] for x in speciesNames]
 
-    def xml2HNautySpeciesDefinitions(self, inputMDLRFile):
+    def xml2hnauty_species_definitions(self, inputMDLRFile):
         """
         Temporary function for translating xml bng definitions to nautty
         species definition strings
@@ -117,36 +117,36 @@ class MDLR2MDL(object):
         with open(namespace.input + '_total.xml', 'w') as f:
             f.write(rest)
         # load up nfsim library
-        self.nfsim.initNFsim(namespace.input + '_total.xml', 0)
+        self.nfsim.init_nfsim(namespace.input + '_total.xml', 0)
 
         # remove encapsulating tags
         seed = seed[30:-30]
         # get the seed species definitions as a list
-        seedDict = self.tokenizeSeedElements(seed)
+        seedDict = self.tokenize_seed_elements(seed)
 
-        nautyDict = {}
+        nauty_dict = {}
         for seed in seedDict:
             # initialize nfsim with each species definition and get back a
             # dirty list where one of the entries is the one we want 
             #
             # XXX: i think i've solved it on the nfsim side, double check
-            tmpList = self.getNautyString(seedDict[seed])
+            tmpList = self.get_nauty_string(seedDict[seed])
             # and now filter it out...
             # get species names from species definition string
-            speciesNames = self.getNamesFromDefinitionString(seed)
-            nautyDict[seed] = [x for x in tmpList if all(y in x for y in speciesNames)][0]
+            speciesNames = self.get_names_from_definition_string(seed)
+            nauty_dict[seed] = [x for x in tmpList if all(y in x for y in speciesNames)][0]
 
-        return nautyDict
+        return nauty_dict
 
-    def getNautyString(self, xmlSpeciesDefinition):
-        self.nfsim.resetSystem()
-        self.nfsim.initSystemXML(xmlSpeciesDefinition)
+    def get_nauty_string(self, xmlSpeciesDefinition):
+        self.nfsim.reset_system()
+        self.nfsim.init_system_xml(xmlSpeciesDefinition)
         result = self.nfsim.querySystemStatus("complex")
         return result
 
 
 if __name__ == "__main__":
-    parser = defineConsole()
+    parser = define_console()
     namespace = parser.parse_args()
     bnglPath = namespace.input + '.bngl'
     finalName = namespace.output if namespace.output else namespace.input
@@ -172,11 +172,11 @@ if __name__ == "__main__":
         mdlDict = write_mdl.constructMDL(
             namespace.input + '_sbml.xml.json', namespace.input, finalName)
         # create an mdl with nfsim-species and nfsim-reactions
-        write_mdl.writeMDL(mdlDict, finalName)
+        write_mdl.write_mdl(mdlDict, finalName)
     else:
         try:
-            mdlr2mdl = MDLR2MDL(os.path.join(getScriptPath(), 'mcellr.yaml'))
-            mdlr2mdl.processMDLR(namespace.input)
+            mdlr2mdl = MDLR2MDL(os.path.join(get_script_path(), 'mcellr.yaml'))
+            mdlr2mdl.process_mdlr(namespace.input)
         except IOError:
             print("Please create mcellr.yaml in the mcellRules directory. Use "
                   "mcellr.yaml.template as a reference.")

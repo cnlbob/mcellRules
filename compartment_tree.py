@@ -1,13 +1,13 @@
 import treelib3
 
 
-def getCompartmentHierarchy(compartmentList):
+def get_compartment_hierarchy(compartmentList):
     '''
     constructs a tree structure containing the
     compartment hierarchy excluding 2D compartments
     @param:compartmentList
     '''
-    def removeMembranes(tree, nodeID):
+    def remove_membranes(tree, nodeID):
         node = tree.get_node(nodeID)
         if node.data == 2:
             parent = tree.get_node(nodeID).bpointer
@@ -53,7 +53,7 @@ def getCompartmentHierarchy(compartmentList):
     return tree
 
 
-def getOutsideInsideCompartment(compartmentList, compartment):
+def get_outside_inside_compartment(compartmentList, compartment):
     outside = compartmentList[compartment][2]
     for comp in compartmentList:
         if compartmentList[comp][2] == compartment:

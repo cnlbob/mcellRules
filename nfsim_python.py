@@ -1,7 +1,7 @@
 from ctypes import *
 
 
-class queryResultsStruct(Structure):
+class QueryResultsStruct(Structure):
     _fields_ = [("numOfResults", c_int),
                 ("results", POINTER(c_char_p))]
 
@@ -10,20 +10,20 @@ class NFSim:
     def __init__(self, libPath):
         self.lib = cdll.LoadLibrary(libPath)
 
-    def initNFsim(self, fileName, verbose):
+    def init_nfsim(self, fileName, verbose):
         """
         inits an nfsim object with a given xml file and a verbosity setting 
         """
         self.lib.setupNFSim_c(fileName, verbose)
 
-    def resetSystem(self):
+    def reset_system(self):
         """
         Resets an nfsim system to having no seeds species
         """
         return self.lib.resetSystem_c()
 
 
-    def initSystemNauty(self, initDict):
+    def init_system_nauty(self, initDict):
         """
         Initializes an nfsim simulation with a given nfsim dictionary with the species in nauty format
         """
@@ -36,7 +36,7 @@ class NFSim:
         return self.lib.initSystemNauty_c(speciesCArray, seedCArray, len(initDict))
 
 
-    def initSystemXML(self, initXML):
+    def init_system_xml(self, initXML):
         """
         Initializes an nfsim simulation with a given seed species XML string
         """
@@ -47,7 +47,7 @@ class NFSim:
         """
         returns all species that participate in active reactions with numReactants reactants
         """
-        #self.lib.querySystemStatus_c.restype = queryResultsStruct
+        #self.lib.querySystemStatus_c.restype = QueryResultsStruct
         
         mem = self.lib.mapvector_create()
         #queryResults = self.lib.querySystemStatus_c(option, mem)
@@ -71,12 +71,12 @@ class NFSim:
 if __name__ == "__main__":
     nfsim = NFSim('./debug/libnfsim_c.so')
 
-    nfsim.initNFsim("cbngl_test_empty.xml", 0)
-    nfsim.resetSystem()
-    #nfsim.initSystemNauty({"c:a~NO_STATE!4!2,c:l~NO_STATE!3,c:l~NO_STATE!3!0,m:Lig!2!1,m:Rec!0":1})
-    #nfsim.initSystemNauty({"c:a~NO_STATE!4!2,c:l~NO_STATE!3,c:l~NO_STATE!3!0,m:Lig!1!2,m:Rec!0,":1})
+    nfsim.init_nfsim("cbngl_test_empty.xml", 0)
+    nfsim.reset_system()
+    #nfsim.init_system_nauty({"c:a~NO_STATE!4!2,c:l~NO_STATE!3,c:l~NO_STATE!3!0,m:Lig!2!1,m:Rec!0":1})
+    #nfsim.init_system_nauty({"c:a~NO_STATE!4!2,c:l~NO_STATE!3,c:l~NO_STATE!3!0,m:Lig!1!2,m:Rec!0,":1})
     #print '---', nfsim.querySystemStatus("observables")
-    nfsim.initSystemNauty({"c:l~NO_STATE!3!1,c:r~NO_STATE!2!0,m:L@EC!1,m:R@PM!0,":1})
+    nfsim.init_system_nauty({"c:l~NO_STATE!3!1,c:r~NO_STATE!2!0,m:L@EC!1,m:R@PM!0,":1})
     print('----', nfsim.querySystemStatus("complex"))
     
     
