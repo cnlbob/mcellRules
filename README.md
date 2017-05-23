@@ -2,8 +2,8 @@
 
 ## Installation
 
-- In build folder, run requirements.py. This file will download and compile,
-  nfsim, nfsimCinterface, and mcell. (May need troubleshooting)
+- In build folder, run `python requirements.py`. This file will download and
+  compile, nfsim, nfsimCinterface, and MCell. (May need troubleshooting)
 - Download a recent version of bionetgen.
 - Update the paths in mcellr.yaml
   - Currently, paths are hard coded and the bngl and mdlr file should be in the
