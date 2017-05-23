@@ -1,0 +1,6 @@
+tags
+*.pyc
+/build/mcell
+/build/nfsim
+/build/nfsimCInterface
+fceri*
