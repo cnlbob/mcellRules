@@ -212,6 +212,8 @@ def constructMCell(xmlStructs, mdlrPath, outputFileName, nautyDict):
     reactionMDL = StringIO()
     outputMDL = StringIO()
     seedMDL = StringIO()
+    mod_surf_reg_MDL = StringIO()
+    surface_classes_MDL = StringIO()
 
     # output statements as is
     for element in statementMDLR:
@@ -221,9 +223,16 @@ def constructMCell(xmlStructs, mdlrPath, outputFileName, nautyDict):
     finalMDL.write('INCLUDE_FILE = "{0}.molecules.mdl"\n'.format(outputFileName))
     finalMDL.write('INCLUDE_FILE = "{0}.reactions.mdl"\n'.format(outputFileName))
     finalMDL.write('INCLUDE_FILE = "{0}.seed.mdl"\n\n'.format(outputFileName))
+    finalMDL.write('INCLUDE_FILE = "{0}.surface_classes.mdl"\n\n'.format(outputFileName))
+    finalMDL.write('INCLUDE_FILE = "{0}.mod_surf_reg.mdl"\n\n'.format(outputFileName))
 
     # output sections using json information
-    sectionOrder = {'DEFINE_MOLECULES': moleculeMDL, 'DEFINE_REACTIONS': reactionMDL, 'REACTION_DATA_OUTPUT': outputMDL, 'INSTANTIATE': seedMDL}
+    sectionOrder = {'DEFINE_SURFACE_CLASSES': surface_classes_MDL,
+                    'MODIFY_SURFACE_REGIONS': mod_surf_reg_MDL,
+                    'DEFINE_MOLECULES': moleculeMDL,
+                    'DEFINE_REACTIONS': reactionMDL,
+                    'REACTION_DATA_OUTPUT': outputMDL,
+                    'INSTANTIATE': seedMDL}
     for element in sectionMDLR:
         if element[0] not in sectionOrder:
             finalMDL.write(writeSection(element))
@@ -283,6 +292,20 @@ def constructMCell(xmlStructs, mdlrPath, outputFileName, nautyDict):
 
     reactionMDL.write('}\n')
 
+    if 'MODIFY_SURFACE_REGIONS' in sectionMDLR.keys():
+        mod_surf_reg_MDL.write('MODIFY_SURFACE_REGIONS {\n')
+        for element in sectionMDLR['MODIFY_SURFACE_REGIONS']:
+            if type(element) is str:
+                mod_surf_reg_MDL.write("  {0} {{\n".format(element))
+            else:
+                mod_surf_reg_MDL.write("    {0} = {1}\n  }}\n".format(element[0][0], element[0][1]))
+        mod_surf_reg_MDL.write('}\n')
+
+    if 'DEFINE_SURFACE_CLASSES' in sectionMDLR.keys():
+        surface_classes_MDL.write('DEFINE_SURFACE_CLASSES {\n')
+        for element in sectionMDLR['DEFINE_SURFACE_CLASSES']:
+            surface_classes_MDL.write("  {0} {{\n    {1} = {2}\n  }}\n".format(element[0], element[1][0][0], element[1][0][1]))
+        surface_classes_MDL.write('}\n')
 
     # seed species
     seedMDL.write('INSTANTIATE Scene OBJECT\n{\n')
@@ -344,7 +367,13 @@ def constructMCell(xmlStructs, mdlrPath, outputFileName, nautyDict):
 
     outputMDL.write('}\n')
     
-    return {'main': finalMDL, 'molecules': moleculeMDL, 'reactions': reactionMDL, 'rxnOutput': outputMDL, 'seeding': seedMDL}
+    return {'main': finalMDL,
+            'molecules': moleculeMDL,
+            'reactions': reactionMDL,
+            'mod_surf_reg': mod_surf_reg_MDL,
+            'surface_classes': surface_classes_MDL,
+            'rxnOutput': outputMDL,
+            'seeding': seedMDL}
 
 
 def constructMDL(jsonPath, mdlrPath, outputFileName):
@@ -470,6 +499,10 @@ def writeMDL(mdlDict, outputFileName):
         f.write(mdlDict['molecules'].getvalue())
     with open('{0}.reactions.mdl'.format(outputFileName), 'w') as f:
         f.write(mdlDict['reactions'].getvalue())
+    with open('{0}.surface_classes.mdl'.format(outputFileName), 'w') as f:
+        f.write(mdlDict['surface_classes'].getvalue())
+    with open('{0}.mod_surf_reg.mdl'.format(outputFileName), 'w') as f:
+        f.write(mdlDict['mod_surf_reg'].getvalue())
     with open('{0}.seed.mdl'.format(outputFileName), 'w') as f:
         f.write(mdlDict['seeding'].getvalue())
     with open('{0}.output.mdl'.format(outputFileName), 'w') as f:
