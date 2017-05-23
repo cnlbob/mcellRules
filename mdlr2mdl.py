@@ -1,13 +1,13 @@
 import argparse
-import readMDL
-import writeMDL
+import read_mdl
+import write_mdl
 from subprocess import call
-import splitBNGXML
+import split_bngxml
 import re
 from nfsim_python import NFSim
 import os
-import readBNGXML
-import writeBNGXMLe as writeBXe
+import read_bngxml
+import write_bngxmle as writeBXe
 import yaml
 import sys
 
@@ -54,11 +54,11 @@ class MDLR2MDL(object):
         with open(mdlrPath + '_total.xml', 'w') as f:
             f.write(bngxmlestr)
 
-        xmlspec = readBNGXML.parseFullXML(namespace.input + '.xml')
+        xmlspec = read_bngxml.parseFullXML(namespace.input + '.xml')
         # write out the equivalent plain mdl stuffs
-        mdlDict = writeMDL.constructMCell(
+        mdlDict = write_mdl.constructMCell(
             xmlspec, namespace.input, finalName.split(os.sep)[-1], nautyDict)
-        writeMDL.writeMDL(mdlDict, finalName)
+        write_mdl.writeMDL(mdlDict, finalName)
 
     def tokenizeSeedElements(self, seed):
         # extract species names
@@ -102,7 +102,7 @@ class MDLR2MDL(object):
         # get a bng-xml file
         call([self.config['bionetgen'], '-xml', '-check', inputMDLRFile + '.bngl'])
         # extract seed species defition
-        seed, rest = splitBNGXML.extractSeedBNG(inputMDLRFile + '.xml')
+        seed, rest = split_bngxml.extractSeedBNG(inputMDLRFile + '.xml')
 
         # store xml with non-seed sections and load up nfsim library
         with open(namespace.input + '_total.xml', 'w') as f:
@@ -143,10 +143,10 @@ if __name__ == "__main__":
     finalName = namespace.output if namespace.output else namespace.input
 
     # mdl to bngl
-    resultDict = readMDL.constructBNGFromMDLR(namespace.input, namespace.nfsim)
+    resultDict = read_mdl.constructBNGFromMDLR(namespace.input, namespace.nfsim)
     outputDir = os.sep.join(namespace.output.split(os.sep)[:-1])
     # create bngl file
-    readMDL.outputBNGL(resultDict['bnglstr'], bnglPath)
+    read_mdl.outputBNGL(resultDict['bnglstr'], bnglPath)
 
     # temporaryly store bng-xml information in a separate file for display
     # purposes
@@ -158,12 +158,12 @@ if __name__ == "__main__":
     if not namespace.nfsim:
         # bngl 2 sbml 2 json
 
-        readMDL.bngl2json(namespace.input + '.bngl')
+        read_mdl.bngl2json(namespace.input + '.bngl')
         # json 2 plain mdl
-        mdlDict = writeMDL.constructMDL(
+        mdlDict = write_mdl.constructMDL(
             namespace.input + '_sbml.xml.json', namespace.input, finalName)
         # create an mdl with nfsim-species and nfsim-reactions
-        writeMDL.writeMDL(mdlDict, finalName)
+        write_mdl.writeMDL(mdlDict, finalName)
     else:
         mdlr2mdl = MDLR2MDL(os.path.join(getScriptPath(), 'mcellr.yaml'))
         # get the species definitions

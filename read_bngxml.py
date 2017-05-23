@@ -5,7 +5,7 @@ Created on Mon Nov 19 14:28:16 2012
 @author: proto
 """
 from lxml import etree
-import smallStructures as st
+import small_structures as st
 try:
     from cStringIO import StringIO
 except ImportError:

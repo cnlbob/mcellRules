@@ -1,5 +1,5 @@
 import json
-import grammarDefinition as gd
+import grammar_definition as gd
 import argparse
 try:
     from StringIO import StringIO

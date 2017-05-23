@@ -1,16 +1,16 @@
 from __future__ import print_function
-from grammarDefinition import *
+from grammar_definition import *
 import sys
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-import smallStructures as st
+import small_structures as st
 import pprint
 from subprocess import call
 from collections import defaultdict
-import writeBNGXMLe
+import write_bngxmle
 import os
 
 
@@ -320,7 +320,7 @@ def constructBNGFromMDLR(mdlrPath,nfsimFlag=False, separateSpatial=True):
         extendedData['molecules'] = sections['molecules']
         extendedData['initialization'] = sections['initialization']['entries']
         propertiesDict = processDiffussionElements(statements, extendedData)
-        bngxmle = writeBNGXMLe.write2BNGXMLe(propertiesDict, mdlrPath.split(os.sep)[-1])
+        bngxmle = write_bngxmle.write2BNGXMLe(propertiesDict, mdlrPath.split(os.sep)[-1])
 
     return {'bnglstr':finalBNGLStr.getvalue(), 'bngxmlestr':bngxmle}
 

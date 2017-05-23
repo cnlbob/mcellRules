@@ -1,11 +1,11 @@
 import xmlrpclib
-import splitBNGXML
+import split_bngxml
 
 
 def getCannonicalLabels(seeds):
     pass
 
-seed, _ = splitBNGXML.extractSeedBNG('example.mdlr.xml')
+seed, _ = split_bngxml.extractSeedBNG('example.mdlr.xml')
 #print seed
 
 
