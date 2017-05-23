@@ -37,15 +37,24 @@ class MDLR2MDL(object):
     def __init__(self, configpath):
         with open(configpath, 'r') as f:
             self.config = yaml.load(f.read())
-        self.nfsim = NFSim(
-            os.path.join(self.config['libpath'], 'libnfsim_c.so'))
+        try:
+            self.nfsim = NFSim(
+                os.path.join(self.config['libpath'], 'libnfsim_c.so'))
+        except OSError:
+            print("Cannot open libnfsim_c.so. Please check libpath in "
+                  "mcellr.yaml")
+            sys.exit(0)
 
     def processMDLR(self, mdlrPath):
         '''
         main method. extracts species definition, creates bng-xml, creates mdl
         definitions
         '''
-        nautyDict = self.xml2HNautySpeciesDefinitions(mdlrPath)
+        try:
+            nautyDict = self.xml2HNautySpeciesDefinitions(mdlrPath)
+        except OSError:
+            print("Cannot open BNG2.pl. Please check bionetgen in mcellr.yaml")
+            sys.exit(0)
 
         # append extended bng-xml to the bng-xml definition (the one that
         # doesn't include seed information)
@@ -168,7 +177,7 @@ if __name__ == "__main__":
         try:
             mdlr2mdl = MDLR2MDL(os.path.join(getScriptPath(), 'mcellr.yaml'))
             mdlr2mdl.processMDLR(namespace.input)
-        except:
+        except IOError:
             print("Please create mcellr.yaml in the mcellRules directory. Use "
                   "mcellr.yaml.template as a reference.")
         # get the species definitions

@@ -1,3 +1,2 @@
-bionetgen: '/home/proto/workspace/RuleWorld/bionetgen/bng2/BNG2.pl'
-libpath: '/home/proto/workspace/mcellRules/lib/'
-
+bionetgen: '/home/user/bionetgen/bng2/BNG2.pl'
+libpath: '/home/user/mcellRules/build/mcell/lib/'
