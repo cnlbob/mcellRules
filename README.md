@@ -4,10 +4,12 @@
 
 - In build folder, run `python requirements.py`. This file will download and
   compile, nfsim, nfsimCinterface, and MCell. (May need troubleshooting)
-- Download a recent version of bionetgen.
-- Update the paths in mcellr.yaml
-  - Currently, paths are hard coded and the bngl and mdlr file should be in the
-    mcellRules directory. 
+- Download and install a recent version of bionetgen.
+- Create a file called mcellr.yaml in the mcellRules directory.
+  - Set the path to bionetgen (the location of BNG2.pl).
+  - Set the "libpath" which should be in ./mcellRules/build/mcell/lib if you
+    ran requirements.py.
+  - Look at mcellr.yaml.template for a reference.
 
 ## Testing
 
