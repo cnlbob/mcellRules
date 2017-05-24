@@ -1,5 +1,7 @@
 import subprocess
 import os
+
+
 def nfsim():
     subprocess.call(['git', 'clone', 'https://github.com/RuleWorld/nfsim.git'])
     os.chdir('nfsim')
@@ -16,6 +18,7 @@ def nfsim():
     os.chdir('..')
     os.chdir('..')
 
+
 def nfsim_lib():
     subprocess.call(['git', 'clone', 'https://github.com/RuleWorld/nfsimCInterface'])
     os.chdir('nfsimCInterface')
@@ -27,11 +30,10 @@ def nfsim_lib():
         pass
 
     os.chdir('lib')
-    subprocess.call(['ln','-s',os.path.join('..','..','nfsim','lib','libNFsim.so')])
+    subprocess.call(['ln', '-s', os.path.join('..', '..', 'nfsim', 'lib', 'libNFsim.so')])
     os.chdir('..')
 
-    subprocess.call(['ln','-s',os.path.join('..','nfsim','include')])
-
+    subprocess.call(['ln', '-s', os.path.join('..', 'nfsim', 'include')])
 
     try:
         os.mkdir('build')
@@ -43,10 +45,11 @@ def nfsim_lib():
     os.chdir('..')
     os.chdir('..')
 
+
 def mcell():
     subprocess.call(['git', 'clone', 'https://github.com/mcellteam/mcell.git'])
     os.chdir('mcell')
-    subprocess.call(['git','checkout','nfsim_diffusion'])
+    subprocess.call(['git', 'checkout', 'nfsim_diffusion'])
     subprocess.call(['git', 'pull'])
 
     try:
@@ -55,16 +58,16 @@ def mcell():
         pass
 
     os.chdir('lib')
-    subprocess.call(['ln','-s',os.path.join('..','..','nfsim','lib','libNFsim.so')])
-    subprocess.call(['ln','-s',os.path.join('..','..','nfsimCInterface','build','libnfsim_c.so')])
+    subprocess.call(['ln', '-s', os.path.join('..', '..', 'nfsim', 'lib', 'libNFsim.so')])
+    subprocess.call(['ln', '-s', os.path.join('..', '..', 'nfsimCInterface', 'build', 'libnfsim_c.so')])
     os.chdir('..')
     try:
         os.mkdir('include')
     except OSError:
         pass
     os.chdir('include')
-    subprocess.call(['ln','-s',os.path.join('..','..','nfsimCInterface','src','nfsim_c_structs.h')])
-    subprocess.call(['ln','-s',os.path.join('..','..','nfsimCInterface','src','nfsim_c.h')])
+    subprocess.call(['ln', '-s', os.path.join('..', '..', 'nfsimCInterface', 'src', 'nfsim_c_structs.h')])
+    subprocess.call(['ln', '-s', os.path.join('..', '..', 'nfsimCInterface', 'src', 'nfsim_c.h')])
 
     os.chdir('..')
     try:
@@ -74,7 +77,6 @@ def mcell():
     os.chdir('build')
     subprocess.call(['cmake', '..'])
     subprocess.call(['make'])
-
 
 
 if __name__ == "__main__":
