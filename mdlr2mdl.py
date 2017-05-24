@@ -66,8 +66,8 @@ class MDLR2MDL(object):
         xmlspec = read_bngxml.parseFullXML(namespace.input + '.xml')
         # write out the equivalent plain mdl stuffs
         mdl_dict = write_mdl.construct_mcell(
-            xmlspec, namespace.input, finalName.split(os.sep)[-1], nauty_dict)
-        write_mdl.write_mdl(mdl_dict, finalName)
+            xmlspec, namespace.input, final_name.split(os.sep)[-1], nauty_dict)
+        write_mdl.write_mdl(mdl_dict, final_name)
 
     def tokenize_seed_elements(self, seed):
         # extract species names
@@ -89,8 +89,8 @@ class MDLR2MDL(object):
         return seed_dict
 
     def get_names_from_definition_string(self, defStr):
-        speciesNames = re.findall('[0-9a-zA-Z_]+\(', defStr)
-        return [x[:-1] for x in speciesNames]
+        species_names = re.findall('[0-9a-zA-Z_]+\(', defStr)
+        return [x[:-1] for x in species_names]
 
     def xml2hnauty_species_definitions(self, inputMDLRFile):
         """
@@ -137,8 +137,8 @@ class MDLR2MDL(object):
             tmpList = self.get_nauty_string(seed_dict[seed])
             # and now filter it out...
             # get species names from species definition string
-            speciesNames = self.get_names_from_definition_string(seed)
-            nauty_dict[seed] = [x for x in tmpList if all(y in x for y in speciesNames)][0]
+            species_names = self.get_names_from_definition_string(seed)
+            nauty_dict[seed] = [x for x in tmpList if all(y in x for y in species_names)][0]
 
         return nauty_dict
 
@@ -152,19 +152,19 @@ class MDLR2MDL(object):
 if __name__ == "__main__":
     parser = define_console()
     namespace = parser.parse_args()
-    bnglPath = namespace.input + '.bngl'
-    finalName = namespace.output if namespace.output else namespace.input
+    bngl_path = namespace.input + '.bngl'
+    final_name = namespace.output if namespace.output else namespace.input
 
     # mdl to bngl
-    resultDict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
+    result_dict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
     outputDir = os.sep.join(namespace.output.split(os.sep)[:-1])
     # create bngl file
-    read_mdl.output_bngl(resultDict['bnglstr'], bnglPath)
+    read_mdl.output_bngl(result_dict['bnglstr'], bngl_path)
 
     # temporaryly store bng-xml information in a separate file for display
     # purposes
     with open(namespace.input + '_extended.xml', 'wb') as f:
-        f.write(resultDict['bngxmlestr'])
+        f.write(result_dict['bngxmlestr'])
 
     # get cannonical label -bngl label dictionary
 
@@ -174,9 +174,9 @@ if __name__ == "__main__":
         read_mdl.bngl2json(namespace.input + '.bngl')
         # json 2 plain mdl
         mdl_dict = write_mdl.constructMDL(
-            namespace.input + '_sbml.xml.json', namespace.input, finalName)
+            namespace.input + '_sbml.xml.json', namespace.input, final_name)
         # create an mdl with nfsim-species and nfsim-reactions
-        write_mdl.write_mdl(mdl_dict, finalName)
+        write_mdl.write_mdl(mdl_dict, final_name)
     else:
         # try:
         mdlr2mdl = MDLR2MDL(os.path.join(get_script_path(), 'mcellr.yaml'))
