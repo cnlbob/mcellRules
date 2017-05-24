@@ -174,10 +174,10 @@ if __name__ == "__main__":
         # create an mdl with nfsim-species and nfsim-reactions
         write_mdl.write_mdl(mdl_dict, finalName)
     else:
-        try:
-            mdlr2mdl = MDLR2MDL(os.path.join(get_script_path(), 'mcellr.yaml'))
-            mdlr2mdl.process_mdlr(namespace.input)
-        except IOError:
-            print("Please create mcellr.yaml in the mcellRules directory. Use "
-                  "mcellr.yaml.template as a reference.")
+        # try:
+        mdlr2mdl = MDLR2MDL(os.path.join(get_script_path(), 'mcellr.yaml'))
+        mdlr2mdl.process_mdlr(namespace.input)
+        # except IOError:
+        #     print("Please create mcellr.yaml in the mcellRules directory. Use "
+        #           "mcellr.yaml.template as a reference.")
         # get the species definitions

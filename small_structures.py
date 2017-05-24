@@ -5,11 +5,11 @@ Created on Wed May 30 11:44:17 2012
 @author: proto
 """
 from copy import deepcopy
-from lxml import etree
 import re
 from random import randint
 from pyparsing import Word, Suppress, Optional, alphanums, Group, ZeroOrMore
 from collections import Counter, defaultdict
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -20,25 +20,25 @@ def parseReactions(reaction):
     components = (Word(alphanums + "_") + Optional(Group('~' + Word(alphanums+"_")))
     + Optional(Group('!' + Word(alphanums+'+?'))))
     molecule = (Word(alphanums + "_")
-    + Optional(Suppress('(') + Group(components) + ZeroOrMore(Suppress(',') + Group(components))    
+    + Optional(Suppress('(') + Group(components) + ZeroOrMore(Suppress(',') + Group(components))
     +Suppress(')')))
-    
+
     species = Group(molecule) + ZeroOrMore(Suppress('.') + Group(molecule))
 
     result = species.parseString(reaction).asList()
-    
+
     return result
 
 def readFromString(string):
     sp = Species()
     reactionList = parseReactions(string)
     for molecule in reactionList:
-        mol = Molecule(molecule[0],'')
-        if len(molecule) >1:
-            for idx in range(1,len(molecule)):
-                comp = Component(molecule[idx][0],'')
+        mol = Molecule(molecule[0], '')
+        if len(molecule) > 1:
+            for idx in range(1, len(molecule)):
+                comp = Component(molecule[idx][0], '')
                 if len(molecule[idx]) > 1:
-                    for idx2 in range(1,len(molecule[idx])):
+                    for idx2 in range(1, len(molecule[idx])):
                         if molecule[idx][idx2][0] == '~':
                             comp.addState(molecule[idx][idx2][1])
                         elif molecule[idx][idx2][0] == '!':
@@ -47,8 +47,9 @@ def readFromString(string):
         sp.addMolecule(mol)
     return sp
 
+
 class Rule:
-    def __init__(self,label=''):
+    def __init__(self, label=''):
         self.label = label
         self.reactants = []
         self.products = []
@@ -56,31 +57,31 @@ class Rule:
         self.bidirectional = False
         self.actions = []
         self.mapping = []
-        
-    def addReactant(self,reactant):
+
+    def addReactant(self, reactant):
         self.reactants.append(reactant)
 
-    def addProduct(self,product):
+    def addProduct(self, product):
         self.products.append(product)
 
-    def addReactantList(self,reactants):
+    def addReactantList(self, reactants):
         self.reactants.extend(reactants)
 
-    def addProductList(self,products):
+    def addProductList(self, products):
         self.products.extend(products)
-        
-    def addRate(self,rate):
+
+    def addRate(self, rate):
         self.rates.append(rate)
-        
-    def addMapping(self,mapping):
+
+    def addMapping(self, mapping):
         self.mapping.add(mapping)
-        
-    def addMappingList(self,mappingList):
+
+    def addMappingList(self, mappingList):
         self.mapping.extend(mappingList)
-        
-    def addActionList(self,actionList):
+
+    def addActionList(self, actionList):
         self.actions.extend(actionList)
-        
+
     def __str__(self):
         finalStr = ''
         if self.label != '':
@@ -88,6 +89,8 @@ class Rule:
         arrow = ' <-> ' if self.bidirectional or len(self.rates) > 1 else ' -> '
         finalStr += ' + '.join([str(x) for x in self.reactants]) + arrow + ' + '.join([str(x) for x in self.products]) + ' ' + ','.join(self.rates)
         return finalStr
+
+
 class Species:
     def __init__(self):
         self.molecules = []
@@ -95,35 +98,34 @@ class Species:
         self.bonds = []
         self.identifier = randint(0, 100000)
         self.idx = ''
-        self.compartment = ''    
+        self.compartment = ''
 
 
-        
     def getBondNumbers(self):
         bondNumbers = [0]
         for element in self.molecules:
             bondNumbers.extend(element.getBondNumbers())
-        return bondNumbers        
-        
+        return bondNumbers
+
     def copy(self):
         species = Species()
-        species.identifier = randint(0,1000000)
+        species.identifier = randint(0, 1000000)
         for molecule in self.molecules:
             species.molecules.append(molecule.copy())
         return species
-        
-    def getMoleculeById(self,idx):
+
+    def getMoleculeById(self, idx):
         for molecule in self.molecules:
             if molecule.idx == idx:
                 return molecule
-    
-    def addMolecule(self,molecule,concatenate=False,iteration = 1):
+
+    def addMolecule(self, molecule, concatenate=False, iteration=1):
         if not concatenate:
             self.molecules.append(molecule)
         else:
             counter = 1
             for element in self.molecules:
-                
+
                 if element.name == molecule.name:
                     if iteration == counter:
                         element.extend(molecule)
@@ -134,12 +136,12 @@ class Species:
             #self.molecules.append(molecule)
             #for element in self.molecules:
             #    if element.name == molecule.name:
-                
-    def addCompartment(self,tags):
+
+    def addCompartment(self, tags):
         for molecule in self.molecules:
             molecule.setCompartment(tags)
-    
-    def deleteMolecule(self,moleculeName):
+
+    def deleteMolecule(self, moleculeName):
         deadMolecule = None
         for element in self.molecules:
             if element.name == moleculeName:
@@ -153,29 +155,30 @@ class Species:
                 for number in bondNumbers:
                     if str(number) in component.bonds:
                         component.bonds.remove(str(number))
-    
-    def getMolecule(self,moleculeName):
+
+    def getMolecule(self, moleculeName):
         for molecule in self.molecules:
             if moleculeName == molecule.name:
                 return molecule
         return None
+
     def getSize(self):
         return len(self.molecules)
-        
+
     def getMoleculeNames(self):
         return [x.name for x in self.molecules]
-    
-    def contains(self,moleculeName):
+
+    def contains(self, moleculeName):
         for molecule in self.molecules:
             if moleculeName == molecule.name:
                 return True
         return False
-        
-    def addChunk(self,tags,moleculesComponents,precursors):
+
+    def addChunk(self, tags, moleculesComponents, precursors):
         '''
         temporary transitional method
         '''
-        for (tag,components) in zip (tags,moleculesComponents):
+        for (tag, components) in zip (tags, moleculesComponents):
             if self.contains(tag):
                 tmp = self.getMolecule(tag)
             else:
@@ -191,7 +194,7 @@ class Species:
                 else:
                     tmpCompo = Component(component[0][0])
                 
-                for index in range(1,len(component[0])):
+                for index in range(1, len(component[0])):
                     tmpCompo.addState(component[0][index])
                 if len(component) > 1:
                     tmpCompo.addBond(component[1])
@@ -199,42 +202,41 @@ class Species:
                     tmp.addComponent(tmpCompo)
             if not self.contains(tag):
                 self.molecules.append(tmp)
-                
-    def extend(self,species,update=True):
+
+    def extend(self, species, update=True):
         if(len(self.molecules) == len(species.molecules)):
-            for (selement,oelement) in zip(self.molecules,species.molecules):
+            for (selement, oelement) in zip(self.molecules, species.molecules):
                 for component in oelement.components:
                     if component.name not in [x.name for x in selement.components]:
                         selement.components.append(component)
                     else:
                         for element in selement.components:
                             if element.name == component.name:
-                                element.addStates(component.states,update)
-                                
+                                element.addStates(component.states, update)
+
         else:
             for element in species.molecules:
                 if element.name not in [x.name for x in self.molecules]:
-                    
-                    self.addMolecule(deepcopy(element),update)
+
+                    self.addMolecule(deepcopy(element), update)
                 else:
                     for molecule in self.molecules:
                         if molecule.name == element.name:
                             for component in element.components:
                                 if component.name not in [x.name for x in molecule.components]:
-                                    molecule.addComponent(deepcopy(component),update)
+                                    molecule.addComponent(deepcopy(component), update)
                                 else:
                                     comp = molecule.getComponent(component.name)
                                     for state in component.states:
-                                        comp.addState(state,update)
-                    
-    
-    def updateBonds(self,bondNumbers):
+                                        comp.addState(state, update)
+
+    def updateBonds(self, bondNumbers):
         newBondNumbers = deepcopy(bondNumbers)
         correspondence = {}
         intersection = [int(x) for x in newBondNumbers if x in self.getBondNumbers()]
         for element in self.molecules:
             for component in element.components:
-                for index in range(0,len(component.bonds)):
+                for index in range(0, len(component.bonds)):
                     if int(component.bonds[index]) in intersection:
                         
                         if component.bonds[index] in correspondence:
@@ -243,33 +245,30 @@ class Species:
                             correspondence[component.bonds[index]] = max(intersection) + 1
                             component.bonds[index] = max(intersection) + 1
                         #intersection = [int(x) for x in newBondNumbers if x in self.getBondNumbers()]
-    
-    def append(self,species):
+
+    def append(self, species):
         newSpecies = (deepcopy(species))
         newSpecies.updateBonds(self.getBondNumbers())
-        
+
         for element in newSpecies.molecules:
-            self.molecules.append(deepcopy(element))              
- 
-    
+            self.molecules.append(deepcopy(element))
+
     def sort(self):
         """
         Sort molecules by number of components, then number of bonded components, then the negative sum of the bond index, then number
         of active states, then string length
         """
         self.molecules.sort(key=lambda molecule: (len(molecule.components),
-                                                  -min([int(y) if y not in ['?','+'] else 999 for x in molecule.components for y in x.bonds] + [999]),
+                                                  -min([int(y) if y not in ['?', '+'] else 999 for x in molecule.components for y in x.bonds] + [999]),
                                                   -len([x for x in molecule.components if len(x.bonds) > 0]),
                                                   -len([x for x in molecule.components if x.activeState not in [0, '0']]),
                                                   len(str(molecule)),
                                                   str(molecule)),
                             reverse=True)
 
-       
     def __str__(self):
         self.sort()
         name = ''
-
 
         moleculeStrings = [x.toString() for x in self.molecules]
         if self.compartment != '':
@@ -281,15 +280,15 @@ class Species:
             name += '.'.join(moleculeStrings)
 
         '''
-        name = name.replace('~','')
+        name = name.replace('~', '')
 
-        name = name.replace('~','')
-        name = name.replace(',','')
-        name = name.replace('.','')
-        name = name.replace('(','')
-        name = name.replace(')','')
-        name = name.replace('!','')
-        name = name.replace('_','')
+        name = name.replace('~', '')
+        name = name.replace(',', '')
+        name = name.replace('.', '')
+        name = name.replace('(', '')
+        name = name.replace(')', '')
+        name = name.replace('!', '')
+        name = name.replace('_', '')
         '''
         return name
 
@@ -303,7 +302,7 @@ class Species:
         for idx, molecule in enumerate(self.molecules):
             for idx2, component in enumerate(molecule.components):
                 for bond in component.bonds:
-                    bondDict[bond].append('M{0}_C{1}'.format(idx,idx2))
+                    bondDict[bond].append('M{0}_C{1}'.format(idx, idx2))
         return bondDict
 
 
@@ -388,7 +387,7 @@ class Species:
                     elif '+' not in component.bonds[0] or \
                       len(bondedPatterns[component.bonds[0]].molecules) == 0:
                         bondedPatterns[component.bonds[0]].addMolecule(moleculeStructure)
-                if componentStructure.idx in [site1,site2] and action != 'StateChange':
+                if componentStructure.idx in [site1, site2] and action != 'StateChange':
                     reactionCenter.append((speciesStructure))
                 elif len(component.bonds) > 0 or component.activeState == '':
                     context.append((speciesStructure))
@@ -400,89 +399,84 @@ class Species:
         context = [str(x) for x in context if str(x) in atomicPatterns]
 
         return atomicPatterns, reactionCenter, context
-                
-                    
-                    
-        
-    def graphVizGraph(self,graph,identifier,layout='LR',options={}):
+
+    def graphVizGraph(self, graph, identifier, layout='LR', options={}):
         speciesDictionary = {}
-        graphName = "%s_%s" % (identifier,str(self))
+        graphName = "%s_%s" % (identifier, str(self))
         
-        for idx,molecule in enumerate(self.molecules):
-            ident = "%s_m%i" %(graphName,idx)
+        for idx, molecule in enumerate(self.molecules):
+            ident = "%s_m%i" %(graphName, idx)
             speciesDictionary[molecule.idx] = ident
             if len(self.molecules) == 1:
-                compDictionary = molecule.graphVizGraph(graph,ident,flag=False,options=options)
+                compDictionary = molecule.graphVizGraph(graph, ident, flag=False, options=options)
             else:
-                #s1 = graph.subgraph(name = graphName,label=' ')
-                compDictionary = molecule.graphVizGraph(graph,ident,flag=False,options=options)
+                #s1 = graph.subgraph(name = graphName, label=' ')
+                compDictionary = molecule.graphVizGraph(graph, ident, flag=False, options=options)
             speciesDictionary.update(compDictionary)
             
         for bond in self.bonds:
             if bond[0] in speciesDictionary and bond[1] in speciesDictionary:
                 if layout == 'RL':
-                    graph.add_edge(speciesDictionary[bond[1]],speciesDictionary[bond[0]],dir='none',len=0.1,weight=100)
+                    graph.add_edge(speciesDictionary[bond[1]], speciesDictionary[bond[0]], dir='none', len=0.1, weight=100)
                 else:
-                    graph.add_edge(speciesDictionary[bond[0]],speciesDictionary[bond[1]],dir='none',len=0.1,weight=100)
+                    graph.add_edge(speciesDictionary[bond[0]], speciesDictionary[bond[1]], dir='none', len=0.1, weight=100)
         return speciesDictionary
-        
-    
-        
-    def containsComponentIdx(self,idx,dictionary):
+
+    def containsComponentIdx(self, idx, dictionary):
         for molecule in self.molecules:
             for component in molecule.components:
                 if component.idx == idx:
                     return dictionary[idx]
         return None
-        
-    def notContainsComponentIdx(self,idx):
+
+    def notContainsComponentIdx(self, idx):
         context = []
         for molecule in self.molecules:
             for component in molecule.components:
                 if component.idx not in idx:
                     context.append(component)
         return context
-        
+
     def hasWildCardBonds(self):
         for molecule in self.molecules:
             if molecule.hasWildcardBonds():
                 return True
         return False
-            
-    def listOfBonds(self,nameDict):
+
+    def listOfBonds(self, nameDict):
         listofbonds = {}
         for bond in self.bonds:
             mol1 = re.sub('_C[^_]*$', '', bond[0])
             mol2 = re.sub('_C[^_]*$', '', bond[1])
             if nameDict[mol1] not in listofbonds:
                 listofbonds[nameDict[mol1]] = {}
-            listofbonds[nameDict[mol1]][nameDict[bond[0]]] = [(nameDict[mol2],nameDict[bond[1]])]
+            listofbonds[nameDict[mol1]][nameDict[bond[0]]] = [(nameDict[mol2], nameDict[bond[1]])]
             if nameDict[mol2] not in listofbonds:
                 listofbonds[nameDict[mol2]] = {}
-            listofbonds[nameDict[mol2]][nameDict[bond[1]]] = [(nameDict[mol1],nameDict[bond[0]])]
+            listofbonds[nameDict[mol2]][nameDict[bond[1]]] = [(nameDict[mol1], nameDict[bond[0]])]
 
         return listofbonds
-        
+
 
 class Molecule:
-    def __init__(self,name,idx):
+    def __init__(self, name, idx):
         self.components = []
-        self.name,self.idx = name,idx
+        self.name, self.idx = name, idx
         self.compartment = ''
-        self.uniqueIdentifier = randint(0,100000)
-        
+        self.uniqueIdentifier = randint(0, 100000)
+
     def copy(self):
-        molecule = Molecule(self.name,self.idx)
+        molecule = Molecule(self.name, self.idx)
         for element in self.components:
             molecule.components.append(element.copy())
         return molecule 
-        
-    def addChunk(self,chunk):
+
+    def addChunk(self, chunk):
         component = Component(chunk[0][0][0][0])
         component.addState(chunk[0][0][0][1])
         self.addComponent(component)
-        
-    def addComponent(self,component,overlap=0):
+
+    def addComponent(self, component, overlap=0):
         if not overlap:
             self.components.append(component)
         else:
@@ -492,51 +486,51 @@ class Molecule:
                 compo = self.getComponent(component.name)
                 for state in component.states:
                     compo.addState(state)
-    
-    def setCompartment(self,compartment):
+
+    def setCompartment(self, compartment):
         self.compartment = compartment
-    
-    def getComponentById(self,idx):
+
+    def getComponentById(self, idx):
         for component in self.components:
             if component.idx == idx:
                 return component
-             
+
     def getBondNumbers(self):
         bondNumbers = []
         for element in self.components:
                 bondNumbers.extend([int(x) for x in element.bonds if x != '+'])
         return bondNumbers
-        
-    def getComponent(self,componentName):
+
+    def getComponent(self, componentName):
         for component in self.components:
             if componentName == component.getName():
                 return component
-                
-    def removeComponent(self,componentName):
+
+    def removeComponent(self, componentName):
         x = [x for x in self.components if x.name == componentName]
         if x != []:
             self.components.remove(x[0])
-            
-    def removeComponents(self,components):
+
+    def removeComponents(self, components):
         for element in components:
             if element in self.components:
                 self.components.remove(element)
-                
-    def addBond(self,componentName,bondName):
+
+    def addBond(self, componentName, bondName):
         bondNumbers = self.getBondNumbers()
         while bondName in bondNumbers:
             bondName += 1
         component = self.getComponent(componentName)
         component.addBond(bondName)
-        
+
     def getComponentWithBonds(self):
         return [x for x in self.components if x.bonds != []]
-        
-    def contains(self,componentName):
+
+    def contains(self, componentName):
         return componentName in [x.name for x in self.components]
-        
+
     def __str__(self):
-        self.components = sorted(self.components,key = lambda st:st.name)
+        self.components = sorted(self.components, key = lambda st:st.name)
         finalStr =  self.name
         if len(self.components) > 0:
             finalStr += '(' + ','.join([str(x) for x in self.components]) + ')' 
@@ -555,15 +549,15 @@ class Molecule:
 
     def toString(self):
         return self.__str__()
-        
+
     def str2(self):
         self.components.sort()
         return self.name + '(' + ','.join([x.str2() for x in self.components]) + ')'
-        
+
     def str3(self):
         return self.name + '(' + self.components[0].name + ')'
 
-    def extend(self,molecule):
+    def extend(self, molecule):
         for element in molecule.components:
             comp = [x for x in self.components if x.name == element.name]
             if len(comp) == 0:
@@ -577,109 +571,110 @@ class Molecule:
     def reset(self):
         for element in self.components:
             element.reset()
-            
-    def update(self,molecule):
+
+    def update(self, molecule):
         for comp in molecule.components:
             if comp.name not in [x.name for x in self.components]:
                 self.components.append(deepcopy(comp))
-                
-    def graphVizGraph(self,graph,identifier,components=None,flag=False,options={}):
+
+    def graphVizGraph(self, graph, identifier, components=None, flag=False, options={}):
         moleculeDictionary = {}
         flag = False
         '''
         if flag:
-            graph.add_node(identifier,label=self.__str__(),name="cluster%s_%s" % (identifier,self.idx))
-            print "cluster%s_%s" % (identifier,self.idx)
+            graph.add_node(identifier, label=self.__str__(), name="cluster%s_%s" % (identifier, self.idx))
+            print "cluster%s_%s" % (identifier, self.idx)
         else:
             print identifier
-            graph.add_node(identifier,label=self.__str__(),name=identifier)
-        
+            graph.add_node(identifier, label=self.__str__(), name=identifier)
+
         moleculeDictionary[self.idx] = identifier
         return moleculeDictionary
         '''
         if len(self.components) == 0:
-            graph.add_node(identifier,label=self.name)
+            graph.add_node(identifier, label=self.name)
             moleculeDictionary[self.idx] = identifier
         else:
             if not flag:
-                s1 = graph.subgraph(name = "cluster%s_%s" % (identifier,self.idx),label=self.name,**options)
+                s1 = graph.subgraph(name = "cluster%s_%s" % (identifier, self.idx), label=self.name, **options)
             else:
-                s1 = graph.subgraph(name = identifier,label=self.name,**options)
-            s1.add_node('cluster%s_%s_dummy' % (identifier,self.idx),shape='point',style='invis')
+                s1 = graph.subgraph(name = identifier, label=self.name, **options)
+            s1.add_node('cluster%s_%s_dummy' % (identifier, self.idx), shape='point', style='invis')
             if components == None:
                 tmpComponents = self.components
             else:
                 tmpComponents = components
-            for idx,component in enumerate(tmpComponents):
-                ident = "%s_c%i" %(identifier,idx)
+            for idx, component in enumerate(tmpComponents):
+                ident = "%s_c%i" %(identifier, idx)
                 moleculeDictionary[component.idx] = ident
-                compDictionary = component.graphVizGraph(s1,ident)
+                compDictionary = component.graphVizGraph(s1, ident)
                 moleculeDictionary.update(compDictionary)
         return moleculeDictionary
-                
-        
+
     def hasWildcardBonds(self):
         for component in self.components:
             if component.hasWilcardBonds():
                 return True
         return False
-        
-    def distance(self,cMolecule):
+
+    def distance(self, cMolecule):
         distance = 0
         distance += 10000 if self.name != cMolecule.name else 0
-        for component1,component2 in zip(self.components,cMolecule.components):
+        for component1, component2 in zip(self.components, cMolecule.components):
             distance += not component1.bonds == component2.bonds
             distance += not component1.activeState == component2.activeState
         return distance
-    
-    def compare(self,cMolecule):
-        self.components = sorted(self.components,key=lambda st:st.name)
-        cMolecule.components = sorted(cMolecule.components,key=lambda st:st.name)
-        for c1,c2 in zip(self.components,cMolecule.components):
+
+    def compare(self, cMolecule):
+        self.components = sorted(self.components, key=lambda st:st.name)
+        cMolecule.components = sorted(cMolecule.components, key=lambda st:st.name)
+        for c1, c2 in zip(self.components, cMolecule.components):
             if c1.activeState != c2.activeState:
                 c1.activeState = ''
-            
+
             if c1.bonds != c2.bonds:
                 '''
                 if len(c1.bonds) != len(c2.bonds) or '?' in c1.bonds or '?' in c2.bonds:
                     c1.bonds = ['?']
-            
+
                 else:
                     c1.bonds = ['+']
             '''
-            
+
+
 class Component:
-    def __init__(self,name,idx,bonds = [],states=[]):
-        self.name,self.idx = name,idx
+    def __init__(self, name, idx, bonds = [], states=[]):
+        self.name, self.idx = name, idx
         self.states = []
         self.bonds = []
         self.activeState = ''
-        
+
     def copy(self):
-        component = Component(self.name,self.idx,deepcopy(self.bonds),deepcopy(self.states))
+        component = Component(self.name, self.idx, deepcopy(self.bonds), deepcopy(self.states))
         component.activeState = deepcopy(self.activeState)     
         return component
-        
-    def addState(self,state,update=True):
+
+    def addState(self, state, update=True):
         if not state in self.states:
             self.states.append(state)
         if update:
             self.setActiveState(state)
-    def addStates(self,states,update=True):
+
+    def addStates(self, states, update=True):
         for state in states:
             if state not in self.states:
-                self.addState(state,update)
-        
-    def addBond(self,bondName):
+                self.addState(state, update)
+
+    def addBond(self, bondName):
         if not bondName in self.bonds:
             self.bonds.append(bondName)
-        
-    def setActiveState(self,state):
+
+    def setActiveState(self, state):
         if state not in self.states:
             return False
         self.activeState = state
         return True
-        
+
     def getRuleStr(self):
         tmp = self.name
         if self.activeState != '':
@@ -687,16 +682,16 @@ class Component:
         if len(self.bonds) > 0:
             tmp += '!' + '!'.join([str(x) for x in self.bonds])
         return tmp
-        
+
     def getTotalStr(self):
         return self.name + '~'.join(self.states)
-    
+
     def getName(self):
         return self.name 
-        
+
     def __str__(self):
         return self.getRuleStr()
-        
+
     def str2(self):
         tmp = self.name
 
@@ -716,88 +711,90 @@ class Component:
 
     def __hash__(self):
         return self.name
-        
+
     def reset(self):
         self.bonds = []
         if '0' in self.states:
             self.activeState = '0'
-            
+
     def hasWilcardBonds(self):
         if '+' in self.bonds:
             return True
         return False
-    
-    def graphVizGraph(self,graph,identifier):
+
+    def graphVizGraph(self, graph, identifier):
         compDictionary = {}
-        
+
         if len(self.states) == 0:
-            graph.add_node(identifier,label=self.name)
+            graph.add_node(identifier, label=self.name)
         else:
-            s1 = graph.subgraph(name="cluster%s_%s" % (identifier,self.idx),label=self.name)
+            s1 = graph.subgraph(name="cluster%s_%s" % (identifier, self.idx), label=self.name)
             if self.activeState != '':
                 ident = "%s" % (identifier)
                 compDictionary[self.activeState] = ident
-                s1.add_node(ident,label = self.activeState)
+                s1.add_node(ident, label = self.activeState)
             else:
-                for idx,state in enumerate(self.state):
-                    ident = "%s_s%i" % (identifier,idx)
-                    s1.add_node(ident,label = state)
+                for idx, state in enumerate(self.state):
+                    ident = "%s_s%i" % (identifier, idx)
+                    s1.add_node(ident, label = state)
                     compDictionary[state] = ident
         return compDictionary
-            
-    def createGraph(self,identifier):
 
-        
-        return component,compDictionary
- 
+    # def createGraph(self, identifier):
+    #     return component, compDictionary
+
     def __lt__(self, other):
         return str(self) < str(other)
 
+
 class States:
-    def __init__(self,name='',idx=''):
+    def __init__(self, name='', idx=''):
         self.name = name
         self.idx = idx
-        
+
+
 class Action:
     def __init__(self):
         self.action = ''
         self.site1 = ''
         self.site2 = ''
-    
-    def setAction(self,action,site1,site2=''):
+
+    def setAction(self, action, site1, site2=''):
         self.action = action
         self.site1 = site1
         self.site2 = site2
-        
+
     def __str__(self):
-        return '%s, %s, %s' %(self.action,self.site1,self.site2)
-        
+        return '%s, %s, %s' % (self.action, self.site1, self.site2)
+
+
 class Databases:
     def __init__(self):
-        self.translator ={}
+        self.translator = {}
         self.synthesisDatabase = {}
         self.catalysisDatabase = {}
         self.rawDatabase = {}
         self.labelDictionary = {}
         self.synthesisDatabase2 = {}
-        
+
     def getRawDatabase(self):
         return self.rawDatabase
-        
+
     def getLabelDictionary(self):
         return self.labelDictionary
-        
-    def add2LabelDictionary(self,key,value):
+
+    def add2LabelDictionary(self, key, value):
         temp = tuple(key)
         temp = temp.sort()
         self.labelDictionary[temp] = value
 
-    def add2RawDatabase(self,rawDatabase):
+    def add2RawDatabase(self, rawDatabase):
         pass
-    
+
     def getTranslator(self):
         return self.translator
-    
+
+
 if __name__ == "__main__":
     sp = readFromString('A(b!1,p~P).B(a!1)')
-    print(sp.toXML('S1','\t'))
+    print(sp.toXML('S1', '\t'))
