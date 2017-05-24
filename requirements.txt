@@ -1,0 +1,4 @@
+lxml==3.7.3
+pyaml==16.12.2
+pyparsing==2.2.0
+PyYAML==3.12
