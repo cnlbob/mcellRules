@@ -108,8 +108,12 @@ class MDLR2MDL(object):
         creation mechanism locally
         """
 
+        command = [self.config['bionetgen'], '-xml', '-check', inputMDLRFile + '.bngl']
+        output_dir = os.path.dirname(inputMDLRFile)
+        if output_dir:
+            command.extend(['--outdir', output_dir])
         # get a bng-xml file
-        call([self.config['bionetgen'], '-xml', '-check', inputMDLRFile + '.bngl'])
+        call(command)
         # extract seed species defition
         seed, rest = split_bngxml.extractSeedBNG(inputMDLRFile + '.xml')
 
