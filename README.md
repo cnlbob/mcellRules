@@ -3,10 +3,11 @@
 ## Installation
 
 - In build folder, run `python requirements.py`. This file will download and
-  compile, nfsim, nfsimCinterface, and MCell. (May need troubleshooting)
-- Download and install a recent version of bionetgen.
+  compile, bionetgen, nfsim, nfsimCinterface, and MCell. (May need
+  troubleshooting)
 - Create a file called mcellr.yaml in the mcellRules directory.
-  - Set the path to bionetgen (the location of BNG2.pl).
+  - Set the path to bionetgen, which should be
+    ./mcellRules/build/bionetgen/bng2/BNG2.pl.
   - Set the "libpath" which should be in ./mcellRules/build/mcell/lib if you
     ran requirements.py.
   - Look at mcellr.yaml.template for a reference.
@@ -28,7 +29,6 @@
   - fceri_mdl.output.mdl
   - fceri_mdl.molecules.mdl
   - fceri_mdl.main.mdl
-
 - Now use the following command to run newly created mdl file:
   `./build/mcell/build/mcell ./required_fceri_files/fceri_mdl.main.mdl -n
   ./required_fceri_files/fceri.mdlr_total.xml`

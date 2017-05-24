@@ -4,5 +4,6 @@ tags
 /build/mcell
 /build/nfsim
 /build/nfsimCInterface
+/build/bionetgen
 fceri*
 mcellr.yaml

@@ -79,7 +79,14 @@ def mcell():
     subprocess.call(['make'])
 
 
+def bng():
+    subprocess.call(['git', 'clone', 'https://github.com/RuleWorld/bionetgen'])
+
+
 if __name__ == "__main__":
+    cwd = os.getcwd()
     nfsim()
     nfsim_lib()
     mcell()
+    os.chdir(cwd)
+    bng()
