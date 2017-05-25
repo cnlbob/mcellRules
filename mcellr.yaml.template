@@ -1,2 +1,2 @@
-bionetgen: '/home/user/bionetgen/bng2/BNG2.pl'
-libpath: '/home/user/mcellRules/build/mcell/lib/'
+bionetgen: './build/bionetgen/bng2/BNG2.pl'
+libpath: './build/mcell/lib/'
