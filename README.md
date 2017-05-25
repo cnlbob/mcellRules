@@ -1,5 +1,17 @@
 # mcellRules
 
+## Overview
+
+MCellR lets you leverage the power of bionetgen's rule based modeling within
+the reaction-diffusion simulator MCell.
+
+Using mdlr2mdl.py, you can convert MDLR files into MDL files. MDLR is similar
+to MDL except it has bionetgen-style syntax for portions of the molecule
+definitions, reactions, releases, and reaction data. After creating the MDL
+files using mdlr2mdl.py, the simulation should be run using a special feature
+branch of MCell (nfsim_diffusion). As the simulation runs, MCell will call the
+NFsim library as needed in order to find reaction partners.
+
 ## Installation
 
 - In build folder, run `python requirements.py`. This file will download and
@@ -32,3 +44,35 @@
 - This will create the following output files in the main mcellRules directory: 
   - fceri.mdlr_total.xml.gdat
   - fceri.mdlr_total.xml_reactions.gdat
+
+## Syntax
+
+For a general overview of MDL, please see the [quick reference
+guide](http://mcell.org/documentation/qrg/index.html).
+
+MDLR is an extension of MDL using bionetgen style syntax. All of the MDL blocks (e.g. DEFINE_MOLECULE, DEFINE_REACTIONS, etc) are prefaced with a pound sign like this:
+
+    #DEFINE_MOLECULES {
+      ..
+    }
+
+    #DEFINE_REACTIONS {
+      ..
+    }
+
+### Molecules
+
+For molecules, the names are treated like bionetgen molecules like
+Syk(tSH2,l~Y~pY,a~Y~pY) in the following example:
+
+    #DEFINE_MOLECULES
+    {
+      Syk(tSH2,l~Y~pY,a~Y~pY)
+      {
+          DIFFUSION_CONSTANT_3D = 8.51e-7 
+      }
+    }
+
+This example shows a molecule named Syk with three different components (tSH2,
+l, and a).  Two of the components (l and a) each have two different states (Y
+and pY).
