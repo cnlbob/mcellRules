@@ -14,13 +14,10 @@
 
 ## Testing
 
-- Download the FCERI compartmental model example (files available here:
-  https://drive.google.com/file/d/0B5fuCwEDXeVbZHBFQnBpT2JQSnM/view?usp=sharing)
-- Extract the zip to the mcellRules directory.
 - Run the following command: `python mdlr2mdl.py -ni
-  ./required_fceri_files/fceri.mdlr -o ./required_fceri_files/fceri_mdl`
+  ./fceri_files/fceri.mdlr -o ./fceri_files/fceri_mdl`
   (use Python 2, not 3, for this part).
-- This will create the following files within the required_fceri_files
+- This will create the following files within the fceri_files
   directory:
   - fceri.mdlr.xml
   - fceri.mdlr_total.xml
@@ -30,8 +27,8 @@
   - fceri_mdl.molecules.mdl
   - fceri_mdl.main.mdl
 - Now use the following command to run newly created mdl file:
-  `./build/mcell/build/mcell ./required_fceri_files/fceri_mdl.main.mdl -n
-  ./required_fceri_files/fceri.mdlr_total.xml`
+  `./build/mcell/build/mcell ./fceri_files/fceri_mdl.main.mdl -n
+  ./fceri_files/fceri.mdlr_total.xml`
 - This will create the following output files in the main mcellRules directory: 
   - fceri.mdlr_total.xml.gdat
   - fceri.mdlr_total.xml_reactions.gdat
