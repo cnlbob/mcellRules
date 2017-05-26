@@ -24,6 +24,9 @@ def define_console():
     parser.add_argument(
         '-b', '--bng-executable', type=str,
         help='file path pointing to the BNG2.pl file')
+    parser.add_argument(
+        '-m', '--mcell-executable', type=str,
+        help='file path pointing to the MCell binary')
     return parser
 
 
@@ -96,8 +99,8 @@ class MDLR2MDL(object):
 
     def xml2hnauty_species_definitions(self, inputMDLRFile):
         """
-        Temporary function for translating xml bng definitions to nautty
-        species definition strings
+        Temporary function for translating xml bng definitions to nauty species
+        definition strings
 
         it call the nfsim library to get the list of possible complexes in the
         system, however the function right now returns the species in question
@@ -133,7 +136,7 @@ class MDLR2MDL(object):
         nauty_dict = {}
         for seed in seed_dict:
             # initialize nfsim with each species definition and get back a
-            # dirty list where one of the entries is the one we want 
+            # dirty list where one of the entries is the one we want
             #
             # XXX: i think i've solved it on the nfsim side, double check
             tmpList = self.get_nauty_string(seed_dict[seed])
