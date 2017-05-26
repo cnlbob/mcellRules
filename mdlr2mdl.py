@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import read_mdl
 import write_mdl
