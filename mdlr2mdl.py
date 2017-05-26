@@ -159,10 +159,11 @@ if __name__ == "__main__":
     namespace = parser.parse_args()
     bngl_path = namespace.input + '.bngl'
     final_name = namespace.output if namespace.output else namespace.input
+    print(namespace.input)
 
     # mdl to bngl
     result_dict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
-    outputDir = os.sep.join(namespace.output.split(os.sep)[:-1])
+    output_dir = os.sep.join(namespace.output.split(os.sep)[:-1])
     # create bngl file
     read_mdl.output_bngl(result_dict['bnglstr'], bngl_path)
 
@@ -190,3 +191,16 @@ if __name__ == "__main__":
             print("Please create mcellr.yaml in the mcellRules directory. Use "
                   "mcellr.yaml.template as a reference.")
         # get the species definitions
+    noext = os.path.splitext(namespace.input)[0]
+    xml_name = "{0}.mdlr_total.xml".format(noext)
+    mdl_name = "{0}.main.mdl".format(namespace.output)
+    with open("mcellr.yaml", 'r') as f:
+        config = yaml.load(f.read())
+    try:
+        mcell_path = config['mcell']
+    except OSError:
+        print("Cannot open MCell. Please check mcell in mcellr.yaml")
+        sys.exit(0)
+    # run MCell
+    cmd = [mcell_path, mdl_name, "-n", xml_name]
+    call(cmd)

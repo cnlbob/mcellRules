@@ -1,3 +1,3 @@
 bionetgen: './build/bionetgen/bng2/BNG2.pl'
 libpath: './build/mcell/lib/'
-mcell: './build/mcell/build/'
+mcell: './build/mcell/build/mcell'
