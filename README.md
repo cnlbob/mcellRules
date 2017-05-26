@@ -50,7 +50,9 @@ NFsim library as needed in order to find reaction partners.
 For a general overview of MDL, please see the [quick reference
 guide](http://mcell.org/documentation/qrg/index.html).
 
-MDLR is an extension of MDL using bionetgen style syntax. All of the MDL blocks (e.g. DEFINE_MOLECULE, DEFINE_REACTIONS, etc) are prefaced with a pound sign like this:
+MDLR is an extension of MDL using bionetgen style syntax. All of the MDL blocks
+(e.g. DEFINE_MOLECULE, DEFINE_REACTIONS, etc) are prefaced with a pound sign
+like this:
 
     #DEFINE_MOLECULES {
       ..
