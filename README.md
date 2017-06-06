@@ -27,8 +27,8 @@ NFsim library as needed in order to find reaction partners.
 
 ## Testing
 
-- Run the following command: `python mdlr2mdl.py -ni
-  ./fceri_files/fceri.mdlr -o ./fceri_files/fceri_mdl`
+- From the mcellRules directory, run the following command:
+  `python mdlr2mdl.py -ni ./fceri_files/fceri.mdlr -o ./fceri_files/fceri_mdl`
   (use Python 2, not 3, for this part).
 - This will create the following files within the fceri_files
   directory:
@@ -66,7 +66,7 @@ like this:
 ### Molecules
 
 For molecules, the names are treated like bionetgen molecules like
-Syk(tSH2,l~Y~pY,a~Y~pY) in the following example:
+`Syk(tSH2,l~Y~pY,a~Y~pY)` in the following example:
 
     #DEFINE_MOLECULES
     {
