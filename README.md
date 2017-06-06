@@ -19,8 +19,8 @@ NFsim library as needed in order to find reaction partners.
   troubleshooting)
 - Create a file called mcellr.yaml in the mcellRules directory.
   - Set the path to bionetgen, which should be
-    ./mcellRules/build/bionetgen/bng2/BNG2.pl.
-  - Set the "libpath" which should be in ./mcellRules/build/mcell/lib if you
+    ./build/bionetgen/bng2/BNG2.pl.
+  - Set the "libpath" which should be in ./build/mcell/lib if you
     ran requirements.py.
   - Look at mcellr.yaml.template for a reference.
 
