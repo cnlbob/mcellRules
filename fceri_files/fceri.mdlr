@@ -226,3 +226,12 @@ DEFINE_SURFACE_CLASSES
 
 
 INCLUDE_FILE = "fceri_mdl.viz_output.mdl"
+
+/*
+REACTION_DATA_OUTPUT
+{
+  STEP=1e-6
+  {COUNT[volume_proxy,WORLD]}=> "./react_data/seed_00001/volume_proxy.World.dat"
+  {COUNT[surface_proxy,WORLD]}=> "./react_data/seed_00001/surface_proxy.World.dat"
+}
+*/
