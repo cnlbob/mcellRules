@@ -30,6 +30,9 @@ NFsim library as needed in order to find reaction partners.
 
 ## Testing
 
+- The **mcellRules/fceri_files** directory should initially contain 2 files:
+  - fceri.mdlr
+  - fceri_ji_comp.geometry.mdl
 - From the **mcellRules** directory, run the following command:
   `python mdlr2mdl.py -ni ./fceri_files/fceri.mdlr -o ./fceri_files/fceri_mdl`
   (use Python 2, not 3, for this part).
@@ -37,14 +40,19 @@ NFsim library as needed in order to find reaction partners.
   - fceri.mdlr.xml
   - fceri.mdlr_total.xml
   - fceri_mdl.seed.mdl
-  - tfceri_mdl.reactions.mdl
+  - fceri_mdl.reactions.mdl
   - fceri_mdl.output.mdl
   - fceri_mdl.molecules.mdl
   - fceri_mdl.main.mdl
-- Now use the following command to run newly created mdl file:
-  `./build/mcell/build/mcell ./fceri_files/fceri_mdl.main.mdl -n
-  ./fceri_files/fceri.mdlr_total.xml`
-- This will create the following output files in the main mcellRules directory: 
+  - fceri_mdl.mod_surf_reg.mdl
+  - fceri_mdl.surface_classes.mdl
+  - fceri.mdlr_extended.xml
+  - fceri.mdlr.bngl
+
+- Now use the following command to run with these newly created files:
+  `./build/mcell/build/mcell ./fceri_files/fceri_mdl.main.mdl -n ./fceri_files/fceri.mdlr_total.xml`
+
+- This will create the following output files in the **mcellRules** directory: 
   - fceri.mdlr_total.xml.gdat
   - fceri.mdlr_total.xml_reactions.gdat
 
