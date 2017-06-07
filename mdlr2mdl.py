@@ -159,7 +159,7 @@ if __name__ == "__main__":
     namespace = parser.parse_args()
     bngl_path = namespace.input + '.bngl'
     final_name = namespace.output if namespace.output else namespace.input
-    print(namespace.input)
+    print("Running " + namespace.input)
 
     # mdl to bngl
     result_dict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
@@ -201,6 +201,9 @@ if __name__ == "__main__":
     except OSError:
         print("Cannot open MCell. Please check mcell in mcellr.yaml")
         sys.exit(0)
-    # run MCell
+    # Generate a list of the commands to run MCell
     cmd = [mcell_path, mdl_name, "-n", xml_name]
-    call(cmd)
+    # Print the command to run MCell
+    print ( "\nRun MCell with: " + " ".join(cmd) )
+    # Actually run MCell (if desired)
+    # call(cmd)
