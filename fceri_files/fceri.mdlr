@@ -4,8 +4,6 @@ VACANCY_SEARCH_DISTANCE = 100
  
 INCLUDE_FILE = "fceri_ji_comp.geometry.mdl"
 
-INCLUDE_FILE = "fceri_mdl.viz_output.mdl"
-
 MODIFY_SURFACE_REGIONS
 {
    EC[wall] {
@@ -102,8 +100,7 @@ DEFINE_SURFACE_CLASSES
 }
 
 
- 
- 
+
 #DEFINE_REACTIONS
 {
     /* Ligand-receptor binding      */
@@ -159,8 +156,8 @@ DEFINE_SURFACE_CLASSES
      Syk(tSH2,l~pY) -> Syk(tSH2,l~Y)  [dc]
      Syk(tSH2,a~pY) -> Syk(tSH2,a~Y)  [dc]
 }
- 
- 
+
+
 #INSTANTIATE Scene OBJECT
 {
   EC OBJECT EC {}
@@ -228,3 +225,4 @@ DEFINE_SURFACE_CLASSES
 }
 
 
+INCLUDE_FILE = "fceri_mdl.viz_output.mdl"
