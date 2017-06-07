@@ -16,22 +16,24 @@ NFsim library as needed in order to find reaction partners.
 
 - Clone this repository. By default, it will create a folder named "mcellRules".
 - In the build folder (mcellRules/build), run `python requirements.py`. This will
-  clone and build, bionetgen, nfsim, nfsimCInterface, and MCell. (May need
-  troubleshooting)
-- Create a file called mcellr.yaml in the mcellRules directory (or copy the file
-  mcellr.yaml.template to mcellr.yaml). These are the default paths from running
-  requirements.py:
+  clone and build:
+    - bionetgen
+    - nfsim
+    - nfsimCInterface
+    - MCell
+- Create a file named **mcellr.yaml** in the **mcellRules** directory (or copy the file
+  **mcellr.yaml.template** to **mcellr.yaml**). These are the default paths in that file
+  after running requirements.py:
   - bionetgen: './build/bionetgen/bng2/BNG2.pl'
   - libpath: './build/mcell/lib/'
   - mcell: './build/mcell/build/mcell'
 
 ## Testing
 
-- From the mcellRules directory, run the following command:
+- From the **mcellRules** directory, run the following command:
   `python mdlr2mdl.py -ni ./fceri_files/fceri.mdlr -o ./fceri_files/fceri_mdl`
   (use Python 2, not 3, for this part).
-- This will create the following files within the fceri_files
-  directory:
+- This will create the following files within the **fceri_files** directory:
   - fceri.mdlr.xml
   - fceri.mdlr_total.xml
   - fceri_mdl.seed.mdl
