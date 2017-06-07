@@ -16,17 +16,11 @@ import sys
 
 def define_console():
     parser = argparse.ArgumentParser(description='SBML to BNGL translator')
-    parser.add_argument(
-        '-i', '--input', type=str, help='input MDLr file', required=True)
-    parser.add_argument(
-        '-n', '--nfsim', action='store_true', help='mcell-nfsim mode')
-    parser.add_argument('-o', '--output', type=str, help='output MDL file')
-    parser.add_argument(
-        '-b', '--bng-executable', type=str,
-        help='file path pointing to the BNG2.pl file')
-    parser.add_argument(
-        '-m', '--mcell-executable', type=str,
-        help='file path pointing to the MCell binary')
+    parser.add_argument('-i', '--input',            type=str,            help='input MDLr file',              required=True)
+    parser.add_argument('-n', '--nfsim',            action='store_true', help='mcell-nfsim mode')
+    parser.add_argument('-o', '--output',           type=str,            help='output MDL file')
+    parser.add_argument('-b', '--bng-executable',   type=str,            help='file path pointing to the BNG2.pl file')
+    parser.add_argument('-m', '--mcell-executable', type=str,            help='file path pointing to the MCell binary')
     return parser
 
 
@@ -118,6 +112,7 @@ class MDLR2MDL(object):
         if output_dir:
             command.extend(['--outdir', output_dir])
         # get a bng-xml file
+        print ( "\n====> Running BioNetGen with: " + " ".join(command) + "\n" )
         call(command)
         # extract seed species defition
         seed, rest = split_bngxml.extractSeedBNG(inputMDLRFile + '.xml')
@@ -204,6 +199,6 @@ if __name__ == "__main__":
     # Generate a list of the commands to run MCell
     cmd = [mcell_path, mdl_name, "-n", xml_name]
     # Print the command to run MCell
-    print ( "\nRun MCell with: " + " ".join(cmd) )
+    print ( "\n====> Run MCell with: " + " ".join(cmd) + "\n" )
     # Actually run MCell (if desired)
     # call(cmd)

@@ -3,7 +3,9 @@ TIME_STEP = 5e-06
 VACANCY_SEARCH_DISTANCE = 100
  
 INCLUDE_FILE = "fceri_ji_comp.geometry.mdl"
- 
+
+INCLUDE_FILE = "fceri_mdl.viz_output.mdl"
+
 MODIFY_SURFACE_REGIONS
 {
    EC[wall] {

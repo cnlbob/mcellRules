@@ -49,7 +49,7 @@ NFsim library as needed in order to find reaction partners.
   - fceri.mdlr_extended.xml
   - fceri.mdlr.bngl
 
-- Now use the following command to run with these newly created files:
+- Now use the following command to run mcell with the newly created files:
   `./build/mcell/build/mcell ./fceri_files/fceri_mdl.main.mdl -n ./fceri_files/fceri.mdlr_total.xml`
 
 - This will create the following output files in the **mcellRules** directory: 
