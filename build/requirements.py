@@ -49,7 +49,7 @@ def nfsim_lib():
 def mcell():
     subprocess.call(['git', 'clone', 'https://github.com/mcellteam/mcell.git'])
     os.chdir('mcell')
-    subprocess.call(['git', 'checkout', 'nfsim_diffusion'])
+    subprocess.call(['git', 'checkout', 'nfsim_dynamic_meshes'])
     subprocess.call(['git', 'pull'])
 
     try:
