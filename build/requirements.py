@@ -20,7 +20,7 @@ def nfsim():
 
 
 def nfsim_lib():
-    subprocess.call(['git', 'clone', 'https://github.com/RuleWorld/nfsimCInterface'])
+    subprocess.call(['git', 'clone', 'https://github.com/mcellteam/nfsimCInterface'])
     os.chdir('nfsimCInterface')
     subprocess.call(['git', 'pull'])
 
