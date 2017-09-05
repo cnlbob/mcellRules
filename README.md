@@ -14,16 +14,15 @@ NFsim library as needed in order to find reaction partners.
 
 ## Installation
 
-- Clone this repository. By default, it will create a folder named "mcellRules".
-- In the build folder (mcellRules/build), run `python requirements.py`. This will
-  clone and build:
+- In the build folder (mcellRules/build), run `python requirements.py`. This
+  will clone and build:
     - bionetgen
     - nfsim
     - nfsimCInterface
     - MCell
-- Create a file named **mcellr.yaml** in the **mcellRules** directory (or copy the file
-  **mcellr.yaml.template** to **mcellr.yaml**). These are the default paths in that file
-  after running requirements.py:
+- Create a file named **mcellr.yaml** in the **mcellRules** directory (or copy
+  the file **mcellr.yaml.template** to **mcellr.yaml**). These are the default
+  paths in that file after running requirements.py:
   - bionetgen: './build/bionetgen/bng2/BNG2.pl'
   - libpath: './build/mcell/lib/'
   - mcell: './build/mcell/build/mcell'
