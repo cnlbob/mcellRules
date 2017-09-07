@@ -200,6 +200,6 @@ if __name__ == "__main__":
     # Generate a list of the commands to run MCell
     cmd = [mcell_path, mdl_name, "-n", xml_name]
     # Print the command to run MCell
-    print("\n====> Run MCell with: " + " ".join(cmd) + "\n")
+    print("\n====> Running MCell with: " + " ".join(cmd) + "\n")
     # Actually run MCell (if desired)
-    # call(cmd)
+    call(cmd)
