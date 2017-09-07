@@ -329,7 +329,11 @@ def construct_mdl(jsonPath, mdlrPath, outputFileName):
             output_mdl.write(' => "./react_data/{0}.dat"\n'.format(obs['name']))
     output_mdl.write('}\n')
 
-    return {'main': final_mdl, 'molecules': molecule_mdl, 'reactions': reaction_mdl, 'rxnOutput': output_mdl, 'seeding': seed_mdl}
+    return {'main': final_mdl,
+            'molecules': molecule_mdl,
+            'reactions': reaction_mdl,
+            'rxnOutput': output_mdl,
+            'seeding': seed_mdl}
 
 
 def define_console():

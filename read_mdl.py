@@ -1,5 +1,5 @@
 from __future__ import print_function
-from grammar_definition import *
+from grammar_definition import statementGrammar, grammar, species_definition
 import sys
 
 try:
@@ -7,7 +7,6 @@ try:
 except ImportError:
     from io import StringIO
 import small_structures as st
-import pprint
 from subprocess import call
 from collections import defaultdict
 import write_bngxmle
@@ -26,7 +25,7 @@ def process_parameters(statements):
     pstr.write('begin parameters\n')
     for parameter in statements:
         if parameter[1][0] != '"':
-            temp_str = '\t{0} {1}\n'.format(parameter[0],parameter[1]).replace('/*', '#')
+            temp_str = '\t{0} {1}\n'.format(parameter[0], parameter[1]).replace('/*', '#')
             temp_str.replace('//', '#')
         else:
             continue
@@ -42,7 +41,7 @@ def create_molecule_from_pattern(molecule_pattern, idx):
         tmp_molecule.compartment = molecule_pattern['moleculeCompartment'][1]
     if 'components' in molecule_pattern.keys():
         for idx2, component in enumerate(molecule_pattern['components']):
-            tmp_component = st.Component(component['componentName'],'{0}_{1}'.format(idx,idx2))
+            tmp_component = st.Component(component['componentName'], '{0}_{1}'.format(idx, idx2))
             if 'state' in component:
                 for state in component['state']:
                     if state != '':
@@ -185,10 +184,6 @@ def process_diffussion_elements(parameters, extendedData):
     moleculeProperties = defaultdict(list)
     compartmentProperties = defaultdict(list)
 
-    #for parameter in parameters:
-    #    if parameter[0] in ['TEMPERATURE']:
-    #        modelProperties[parameter[0]] = parameter[1]
-
     for parameter in extendedData['system']:
         modelProperties[parameter[0].strip()] = parameter[1].strip()
     
@@ -201,14 +196,13 @@ def process_diffussion_elements(parameters, extendedData):
             if 'function' in molecule[1]['diffusionFunction'].keys():
                 parameters = molecule[1]['diffusionFunction'][1]['parameters']
                 data = {'name': '"{0}"'.format(molecule[1]['diffusionFunction'][1]['functionName']), 
-                'parameters':[(x['key'], x['value']) for x in parameters]}
+                'parameters': [(x['key'], x['value']) for x in parameters]}
             else:
-                data = {'name':molecule[1]['diffusionFunction'][1].strip(), 'parameters': []}
-            #moleculeProperties[molecule[0][0]].append((molecule[1]['diffusionFunction'][0], data))
+                data = {'name': molecule[1]['diffusionFunction'][1].strip(), 'parameters': []}
             if '3D' in molecule[1]['diffusionFunction'].keys():
-                dimensionality = {'name':'3','parameters':[]}
+                dimensionality = {'name': '3', 'parameters': []}
             if '2D' in molecule[1]['diffusionFunction'].keys():
-                dimensionality = {'name':'2','parameters':[]}
+                dimensionality = {'name': '2', 'parameters': []}
 
             moleculeProperties[molecule[0][0]].append(('diffusion_function', data))
             moleculeProperties[molecule[0][0]].append(('dimensionality', dimensionality))
@@ -231,7 +225,7 @@ def process_diffussion_elements(parameters, extendedData):
             if membrane != '' and len(membrane_properties) > 0:
                 compartmentProperties[membrane] = membrane_properties
 
-    return {'modelProperties':modelProperties, 'moleculeProperties': moleculeProperties, 
+    return {'modelProperties': modelProperties, 'moleculeProperties': moleculeProperties,
             'compartmentProperties': compartmentProperties}
 
 
@@ -257,7 +251,7 @@ def write_default_functions():
     return defaultFunctions.getvalue()
 
 
-def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
+def construct_bng_from_mdlr(mdlrPath, nfsimFlag=False, separate_spatial=True):
     '''
     initializes a bngl file and an extended-bng-xml file with a MDLr file description
     '''
@@ -282,7 +276,7 @@ def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
         functions = process_functions(sections['math_functions'])
     else:
         functions = ''
-    
+
     if not nfsimFlag:
         observables = process_observables(sections['observables'])
     else:
@@ -290,10 +284,7 @@ def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
             observables = process_observables(sections['observables'])
         except KeyError:
             eprint('There is an issue with the observables section in the mdlr file')
-        #observables = process_mtobservables(molecule_list)
     reactions = process_reaction_rules(sections['reactions'])
-
-    #functions = write_default_functions()
 
     final_bngl_str.write(parameterStr)
     final_bngl_str.write(moleculeStr)
@@ -301,11 +292,10 @@ def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
     final_bngl_str.write(seedspecies)
     final_bngl_str.write(observables)
     final_bngl_str.write(functions)
-    #final_bngl_str.write('begin observables\nend observables\n')
     final_bngl_str.write(reactions)
     final_bngl_str.write('end model\n')
 
-    #add processing actions
+    # add processing actions
     if not nfsimFlag:
         final_bngl_str.write('generate_network({overwrite=>1})\n')
         final_bngl_str.write('writeSBML()\n')
@@ -325,14 +315,14 @@ def construct_bng_from_mdlr(mdlrPath,nfsimFlag=False, separate_spatial=True):
         propertiesDict = process_diffussion_elements(statements, extended_data)
         bngxmle = write_bngxmle.write2bngxmle(propertiesDict, mdlrPath.split(os.sep)[-1])
 
-    return {'bnglstr':final_bngl_str.getvalue(), 'bngxmlestr':bngxmle}
+    return {'bnglstr': final_bngl_str.getvalue(), 'bngxmlestr': bngxmle}
 
 
 def bngl2json(bnglFile):
-    call(['bngdev',bnglFile])
+    call(['bngdev', bnglFile])
     sbmlName = '.'.join(bnglFile.split('.')[:-1]) + '_sbml.xml'
     print(sbmlName)
-    call(['./sbml2json','-i', sbmlName])
+    call(['./sbml2json', '-i', sbmlName])
 
 
 def output_bngl(bngl_str, bnglPath):
@@ -341,11 +331,9 @@ def output_bngl(bngl_str, bnglPath):
 
 
 if __name__ == "__main__":
-    
+
     bngl_str = construct_bng_from_mdlr('example.mdlr')
     bnglPath = 'output.bngl'
     output_bngl(bngl_str, bnglPath)
 
-    bngl2json(bnglFile)
-
-
+    # bngl2json(bnglFile)

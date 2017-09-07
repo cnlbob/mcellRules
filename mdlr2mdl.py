@@ -112,7 +112,7 @@ class MDLR2MDL(object):
         if output_dir:
             command.extend(['--outdir', output_dir])
         # get a bng-xml file
-        print ( "\n====> Running BioNetGen with: " + " ".join(command) + "\n" )
+        print("\n====> Running BioNetGen with: " + " ".join(command) + "\n")
         call(command)
         # extract seed species defition
         seed, rest = split_bngxml.extractSeedBNG(inputMDLRFile + '.xml')
@@ -157,7 +157,8 @@ if __name__ == "__main__":
     print("Running " + namespace.input)
 
     # mdl to bngl
-    result_dict = read_mdl.construct_bng_from_mdlr(namespace.input, namespace.nfsim)
+    result_dict = read_mdl.construct_bng_from_mdlr(
+        namespace.input, namespace.nfsim)
     output_dir = os.sep.join(namespace.output.split(os.sep)[:-1])
     # create bngl file
     read_mdl.output_bngl(result_dict['bnglstr'], bngl_path)
@@ -199,6 +200,6 @@ if __name__ == "__main__":
     # Generate a list of the commands to run MCell
     cmd = [mcell_path, mdl_name, "-n", xml_name]
     # Print the command to run MCell
-    print ( "\n====> Run MCell with: " + " ".join(cmd) + "\n" )
+    print("\n====> Run MCell with: " + " ".join(cmd) + "\n")
     # Actually run MCell (if desired)
     # call(cmd)
