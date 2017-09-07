@@ -100,7 +100,7 @@ class MDLR2MDL(object):
         system, however the function right now returns the species in question
         + all molecule types (if we are sending a lone molecule tye as
         initialization it still returns all molecule types), which means the
-        list requires filterinng. and the filtering is not pretty
+        list requires filtering. and the filtering is not pretty
 
         How to solve: make it so that nfsim returns a more sensible complex
         list (filtering out unrelated molecule types) or create a nauty label
@@ -114,7 +114,7 @@ class MDLR2MDL(object):
         # get a bng-xml file
         print("\n====> Running BioNetGen with: " + " ".join(command) + "\n")
         call(command)
-        # extract seed species defition
+        # extract seed species definition
         seed, rest = split_bngxml.extractSeedBNG(inputMDLRFile + '.xml')
 
         # store xml with non-seed sections and load up nfsim library
@@ -163,12 +163,12 @@ if __name__ == "__main__":
     # create bngl file
     read_mdl.output_bngl(result_dict['bnglstr'], bngl_path)
 
-    # temporaryly store bng-xml information in a separate file for display
+    # temporarily store bng-xml information in a separate file for display
     # purposes
     with open(namespace.input + '_extended.xml', 'wb') as f:
         f.write(result_dict['bngxmlestr'])
 
-    # get cannonical label -bngl label dictionary
+    # get canonical label -bngl label dictionary
 
     if not namespace.nfsim:
         # bngl 2 sbml 2 json
