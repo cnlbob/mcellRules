@@ -8,13 +8,13 @@ class QueryResultsStruct(Structure):
 
 class NFSim:
     def __init__(self, libPath):
-        self.lib = cdll.LoadLibrary(libPath)
+        self.lib = cdll.LoadLibrary(libPath.encode("ascii"))
 
     def init_nfsim(self, fileName, verbose):
         """
         inits an nfsim object with a given xml file and a verbosity setting 
         """
-        self.lib.setupNFSim_c(fileName, verbose)
+        self.lib.setupNFSim_c(fileName.encode("ascii"), verbose)
 
     def reset_system(self):
         """
@@ -40,7 +40,7 @@ class NFSim:
         """
         Initializes an nfsim simulation with a given seed species XML string
         """
-        return self.lib.initSystemXML_c(initXML)
+        return self.lib.initSystemXML_c(initXML.encode("ascii"))
 
 
     def querySystemStatus(self, option):
@@ -54,14 +54,14 @@ class NFSim:
         self.lib.querySystemStatus_c.argtypes = [c_char_p, c_void_p]
         self.lib.map_get.restype = c_char_p
 
-        key = c_char_p(option)
+        key = c_char_p(option.encode("ascii"))
         self.lib.querySystemStatus_c(key,mem)
         #results = [queryResults.results[i] for i in range(0, queryResults.numOfResults)]
         results = []
         for idx in range(0, self.lib.mapvector_size(mem)):
             #XXX:ideally i would like to returns all key values but that will require a lil more work on teh wrapper side
             partialResults = self.lib.mapvector_get(mem, idx)
-            results.append(self.lib.map_get(partialResults,"label"))
+            results.append(self.lib.map_get(partialResults, b"label"))
         self.lib.mapvector_delete(mem)
         return sorted(results, key=len)
 

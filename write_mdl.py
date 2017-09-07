@@ -198,7 +198,7 @@ def construct_mcell(xmlStructs, mdlrPath, outputFileName, nautyDict):
                 seed_mdl.write('\t\t{0} = {1}\n'.format(element[0].strip(), element[1].strip()))
             else:
                 pass
-        seed_mdl.write('\t\tGRAPH_PATTERN = "{0}"\n'.format(nautyDict[bngseed['structure'].trueName]))
+        seed_mdl.write('\t\tGRAPH_PATTERN = "{0}"\n'.format(nautyDict[bngseed['structure'].trueName].decode("ascii")))
 
         seed_mdl.write('\t}\n')
     seed_mdl.write('}\n')

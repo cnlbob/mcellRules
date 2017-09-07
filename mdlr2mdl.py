@@ -60,7 +60,7 @@ class MDLR2MDL(object):
         bngxmlestr = writeBXe.merge_bxbxe(
             namespace.input + '_total.xml', namespace.input + '_extended.xml')
         with open(mdlrPath + '_total.xml', 'w') as f:
-            f.write(bngxmlestr)
+            f.write(bngxmlestr.decode("ascii"))
 
         xmlspec = read_bngxml.parseFullXML(namespace.input + '.xml')
         # write out the equivalent plain mdl stuffs
@@ -89,7 +89,7 @@ class MDLR2MDL(object):
 
     def get_names_from_definition_string(self, defStr):
         species_names = re.findall('[0-9a-zA-Z_]+\(', defStr)
-        return [x[:-1] for x in species_names]
+        return [x[:-1].encode("ascii") for x in species_names]
 
     def xml2hnauty_species_definitions(self, inputMDLRFile):
         """
