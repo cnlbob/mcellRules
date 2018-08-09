@@ -2,6 +2,8 @@
 
 ## Overview
 
+**Note:** This repo is deprecated. Please use the [nfsim_dynamic_meshes_pymcell branch](https://github.com/mcellteam/mcell/tree/nfsim_dynamic_meshes_pymcell) instead.
+
 MCellR lets you leverage the power of bionetgen's rule based modeling within
 the reaction-diffusion simulator MCell.
 
